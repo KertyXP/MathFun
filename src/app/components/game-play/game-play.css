@@ -19,7 +19,6 @@
   pointer-events: none;
   z-index: 9999;
 }
-}
 
 /* Header Controls */
 .game-header {
@@ -30,6 +29,17 @@
   max-width: 650px;
   margin-bottom: 2rem;
   z-index: 5;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 100px;
+}
+
+.header-spacer {
+  width: 100px;
 }
 
 .exit-game-btn {

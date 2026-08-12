@@ -140,7 +140,6 @@ export class GamePlayComponent implements OnInit, OnDestroy {
     if (correct) {
       this.audioService.playSuccess();
       this.triggerConfetti();
-      this.addFloatingFeedback('✨ Correct !', 'correct');
     } else {
       this.audioService.playError();
       if (this.gameService.isTimerEnabled()) {
