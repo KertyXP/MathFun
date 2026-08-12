@@ -1,12 +1,12 @@
 <nav class="navbar">
-  <div class="nav-brand" routerLink="/levels" (click)="audioService.playClick()">
+  <div class="nav-brand" routerLink="/menu" (click)="audioService.playClick()">
     <span class="logo-emoji">🎒</span>
     <span class="logo-text">Math<span class="logo-fun">Fun</span></span>
   </div>
 
   <div class="nav-controls">
     @if (profileService.currentProfile(); as profile) {
-      <div class="profile-chip" routerLink="/levels" (click)="audioService.playClick()">
+      <div class="profile-chip" routerLink="/menu" (click)="audioService.playClick()">
         <span class="avatar-icon">{{ profile.avatar }}</span>
         <span class="profile-name">{{ profile.name }}</span>
         <span class="points-badge">⭐ {{ profile.totalPoints }}</span>

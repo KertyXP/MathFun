@@ -27,6 +27,8 @@ export class GameService {
   private questions = signal<Question[]>([]);
   private currentIndex = signal<number>(0);
   private userAnswers = signal<UserAnswer[]>([]);
+  private isTimerMode = signal<boolean>(true);
+  private trainingTables = signal<number[]>([]);
   
   // Lobby and timer states
   private started = signal<boolean>(false);
@@ -36,6 +38,7 @@ export class GameService {
 
   // Computeds
   readonly currentLevel = computed(() => this.activeLevel());
+  readonly isTimerEnabled = computed(() => this.isTimerMode());
   readonly isGameStarted = computed(() => this.started());
   readonly currentQuestion = computed(() => {
     const qList = this.questions();
@@ -43,16 +46,25 @@ export class GameService {
     return qList.length > 0 && idx < qList.length ? qList[idx] : null;
   });
   readonly currentQuestionIndex = computed(() => this.currentIndex());
-  readonly totalQuestionsCount = computed(() => this.QUESTIONS_COUNT);
+  readonly totalQuestionsCount = computed(() => {
+    if (!this.isTimerMode()) {
+      return this.questions().length;
+    }
+    return this.QUESTIONS_COUNT;
+  });
   readonly correctAnswersCount = computed(() => this.userAnswers().filter(a => a.isCorrect).length);
   readonly allAnswers = computed(() => this.userAnswers());
   readonly isGameOver = computed(() => {
+    if (!this.isTimerMode()) {
+      return false; // Unlimited training mode never ends automatically
+    }
     return this.started() && this.currentIndex() >= this.QUESTIONS_COUNT;
   });
   readonly gameDuration = computed(() => this.elapsedSeconds());
 
   // Initialize a new game round in the "pre-game lobby" state
   startGame(level: GameLevel) {
+    this.isTimerMode.set(true);
     this.activeLevel.set(level);
     this.currentIndex.set(0);
     this.userAnswers.set([]);
@@ -64,23 +76,55 @@ export class GameService {
     this.questions.set(generated);
   }
 
-  // Active quiz starts (when user presses Enter)
+  // Initialize multiplication practice round (no timer, unlimited questions)
+  startMultiplicationTraining(tables: number[]) {
+    this.isTimerMode.set(false);
+    const sortedTables = [...tables].sort((a, b) => a - b);
+    this.trainingTables.set(sortedTables);
+
+    const customLevel: GameLevel = {
+      id: 99,
+      name: `Tables de ${sortedTables.join(', ')}`,
+      description: `Entraînement illimité sur les tables ${sortedTables.join(', ')} (Sans chrono)`,
+      icon: '♾️',
+      minVal: 1,
+      maxVal: 10,
+      operations: ['*'],
+      questionsCount: 9999,
+      passingScore: 8,
+      bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
+      cardColor: '#FF69B4'
+    };
+
+    this.activeLevel.set(customLevel);
+    this.currentIndex.set(0);
+    this.userAnswers.set([]);
+    this.started.set(false);
+    this.elapsedSeconds.set(0);
+    this.clearStopwatch();
+
+    const generated = this.generateMultiplicationQuestions(sortedTables, 30);
+    this.questions.set(generated);
+  }
+
+  // Active quiz starts (when user presses Enter or clicks button)
   startActiveQuiz() {
     if (this.started()) return;
     this.started.set(true);
     this.startTime = Date.now();
     
-    // Start stopwatch ticking every 100ms for precision display (e.g. 1.2s)
-    this.clearStopwatch();
-    this.stopwatchInterval = setInterval(() => {
-      const diffMs = Date.now() - this.startTime;
-      this.elapsedSeconds.set(Number((diffMs / 1000).toFixed(1)));
-    }, 100);
+    if (this.isTimerMode()) {
+      this.clearStopwatch();
+      this.stopwatchInterval = setInterval(() => {
+        const diffMs = Date.now() - this.startTime;
+        this.elapsedSeconds.set(Number((diffMs / 1000).toFixed(1)));
+      }, 100);
+    }
   }
 
   // Adds a penalty in seconds to the stopwatch timing
   applyTimePenalty(seconds: number) {
-    if (!this.started()) return;
+    if (!this.started() || !this.isTimerMode()) return;
     this.startTime -= seconds * 1000;
     const diffMs = Date.now() - this.startTime;
     this.elapsedSeconds.set(Number((diffMs / 1000).toFixed(1)));
@@ -104,12 +148,19 @@ export class GameService {
     const nextIdx = this.currentIndex() + 1;
     this.currentIndex.set(nextIdx);
 
-    // If game is over, stop the stopwatch
-    if (nextIdx >= this.QUESTIONS_COUNT) {
-      this.clearStopwatch();
-      // Record final precise duration
-      const finalDiffMs = Date.now() - this.startTime;
-      this.elapsedSeconds.set(Number((finalDiffMs / 1000).toFixed(2)));
+    // In unlimited training mode, replenish more questions if getting near the end
+    if (!this.isTimerMode()) {
+      if (nextIdx >= this.questions().length - 3) {
+        const extraQuestions = this.generateMultiplicationQuestions(this.trainingTables(), 20);
+        this.questions.update(q => [...q, ...extraQuestions]);
+      }
+    } else {
+      // If game is over in regular mode, stop the stopwatch
+      if (nextIdx >= this.QUESTIONS_COUNT) {
+        this.clearStopwatch();
+        const finalDiffMs = Date.now() - this.startTime;
+        this.elapsedSeconds.set(Number((finalDiffMs / 1000).toFixed(2)));
+      }
     }
 
     return isCorrect;
@@ -181,5 +232,27 @@ export class GameService {
       operation: op,
       correctAnswer
     };
+  }
+
+  private generateMultiplicationQuestions(tables: number[], count = 10): Question[] {
+    const list: Question[] = [];
+    for (let i = 0; i < count; i++) {
+      const table = tables[Math.floor(Math.random() * tables.length)];
+      const multiplier = Math.floor(Math.random() * 10) + 1; // 1 to 10
+      let num1 = table;
+      let num2 = multiplier;
+      if (Math.random() < 0.5) {
+        num1 = multiplier;
+        num2 = table;
+      }
+      list.push({
+        text: `${num1} × ${num2}`,
+        num1,
+        num2,
+        operation: '*',
+        correctAnswer: num1 * num2
+      });
+    }
+    return list;
   }
 }

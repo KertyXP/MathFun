@@ -29,9 +29,15 @@
         <div class="score-text">
           {{ gameService.correctAnswersCount() }} / {{ gameService.totalQuestionsCount() }} correctes !
         </div>
-        <div class="time-text">
-          ⚡ Réussi en <span class="time-highlight">{{ gameService.gameDuration().toFixed(2) }} secondes</span>
-        </div>
+        @if (gameService.isTimerEnabled()) {
+          <div class="time-text">
+            ⚡ Réussi en <span class="time-highlight">{{ gameService.gameDuration().toFixed(2) }} secondes</span>
+          </div>
+        } @else {
+          <div class="time-text">
+            🌱 Entraînement sans chrono
+          </div>
+        }
       </div>
 
       <!-- Progression Status Notification -->
@@ -56,8 +62,17 @@
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button class="btn btn-secondary" routerLink="/levels" (click)="audioService.playClick()">
-          🗺️ Carte des niveaux
+        @if (gameService.isTimerEnabled()) {
+          <button class="btn btn-secondary" routerLink="/levels" (click)="audioService.playClick()">
+            🗺️ Carte des niveaux
+          </button>
+        } @else {
+          <button class="btn btn-secondary" routerLink="/multiplication" (click)="audioService.playClick()">
+            ✖️ Choix des tables
+          </button>
+        }
+        <button class="btn btn-secondary" routerLink="/menu" (click)="audioService.playClick()">
+          🏠 Menu
         </button>
         <button class="btn btn-primary" (click)="replayLevel()">
           🔄 Rejouer

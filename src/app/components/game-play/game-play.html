@@ -5,7 +5,7 @@
   @if (gameService.currentLevel(); as level) {
     <!-- Top Game Control Bar -->
     <div class="game-header">
-      <button class="exit-game-btn" routerLink="/levels" (click)="audioService.playClick()">
+      <button class="exit-game-btn" [routerLink]="gameService.isTimerEnabled() ? '/levels' : '/multiplication'" (click)="audioService.playClick()">
         ⬅️ Quitter
       </button>
 
@@ -14,13 +14,19 @@
         <span>{{ level.name }}</span>
       </div>
 
-      <!-- Precise Stopwatch Display with Penalty alert -->
+      <!-- Stopwatch or Free Practice Badge -->
       <div class="stopwatch-container">
-        <div class="stopwatch-display">
-          ⏱️ <span class="stopwatch-val">{{ gameService.gameDuration().toFixed(1) }}s</span>
-        </div>
-        @if (showPenalty()) {
-          <div class="penalty-badge">+5s ⚠️</div>
+        @if (gameService.isTimerEnabled()) {
+          <div class="stopwatch-display">
+            ⏱️ <span class="stopwatch-val">{{ gameService.gameDuration().toFixed(1) }}s</span>
+          </div>
+          @if (showPenalty()) {
+            <div class="penalty-badge">+5s ⚠️</div>
+          }
+        } @else {
+          <div class="stopwatch-display practice-mode-chip">
+            ♾️ Entraînement Illimité
+          </div>
         }
       </div>
     </div>
@@ -34,8 +40,12 @@
           <div class="lobby-icon" [style.background]="level.bgColor">{{ level.icon }}</div>
           <h2 class="lobby-title">Es-tu prêt, aventurier ?</h2>
           <p class="lobby-subtitle">
-            Tu vas affronter <strong>{{ gameService.totalQuestionsCount() }} questions</strong> dans cette mission.
-            Résous-les aussi vite et précisément que possible pour battre un nouveau record !
+            @if (gameService.isTimerEnabled()) {
+              Tu vas affronter <strong>{{ gameService.totalQuestionsCount() }} questions</strong> dans cette mission.
+              Résous-les aussi vite et précisément que possible pour battre un nouveau record !
+            } @else {
+              Entraîne-toi en <strong>mode illimité ♾️</strong> à ton propre rythme, sans aucune limite de temps !
+            }
           </p>
 
           <button class="start-game-btn" (click)="startQuiz()" [style.background]="level.cardColor">
@@ -50,7 +60,7 @@
           <div class="progress-line"></div>
           <div 
             class="mascot-runner"
-            [style.left.%]="(gameService.currentQuestionIndex() / gameService.totalQuestionsCount()) * 100"
+            [style.left.%]="gameService.isTimerEnabled() ? (gameService.currentQuestionIndex() / gameService.totalQuestionsCount()) * 100 : ((gameService.currentQuestionIndex() % 10) / 10) * 100"
           >
             {{ level.icon }}
           </div>
@@ -71,8 +81,19 @@
           }
         </div>
 
-        <div class="question-meta">
-          Question {{ gameService.currentQuestionIndex() + 1 }} sur {{ gameService.totalQuestionsCount() }}
+        <div class="question-meta-bar">
+          <div class="question-meta">
+            @if (gameService.isTimerEnabled()) {
+              Question {{ gameService.currentQuestionIndex() + 1 }} sur {{ gameService.totalQuestionsCount() }}
+            } @else {
+              Calcul #{{ gameService.currentQuestionIndex() + 1 }} (Mode Illimité ♾️) — {{ gameService.correctAnswersCount() }} ⭐
+            }
+          </div>
+          @if (!gameService.isTimerEnabled()) {
+            <button type="button" class="stop-training-btn" (click)="finishTrainingSession()">
+              🏁 Bilan & Quitter
+            </button>
+          }
         </div>
 
         <!-- Math Formula Display -->

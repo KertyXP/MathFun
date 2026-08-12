@@ -54,10 +54,12 @@ export class GamePlayComponent implements OnInit, OnDestroy {
   showPenalty = signal<boolean>(false);
   private penaltyTimeout: any = null;
 
+
+
   // Confetti particles
   private particles: ConfettiParticle[] = [];
   private animationFrameId: number | null = null;
-  private colors = ['#FF6B6B', '#4D96FF', '#6BCB77', '#FFD93D', '#FF9F43', '#AC87FF'];
+  private colors = ['#FFD700', '#FF1493', '#00E5FF', '#00FF7F', '#FF4500', '#9370DB', '#FF007F', '#7C3AED', '#FFD93D'];
 
   get hasTypedAnswer(): boolean {
     if (this.typedAnswer === undefined || this.typedAnswer === null) return false;
@@ -75,20 +77,27 @@ export class GamePlayComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const levelId = Number(this.route.snapshot.paramMap.get('levelId'));
-    const level = GAME_LEVELS.find(l => l.id === levelId);
-
-    if (!level) {
-      this.router.navigate(['/levels']);
-      return;
-    }
-
     const profile = this.profileService.currentProfile();
-    if (!profile || profile.unlockedLevel < level.id) {
-      this.router.navigate(['/levels']);
+
+    if (!profile) {
+      this.router.navigate(['/profiles']);
       return;
     }
 
-    this.gameService.startGame(level);
+    if (levelId === 99) {
+      if (!this.gameService.currentLevel()) {
+        this.router.navigate(['/multiplication']);
+        return;
+      }
+    } else {
+      const level = GAME_LEVELS.find(l => l.id === levelId);
+      if (!level || profile.unlockedLevel < level.id) {
+        this.router.navigate(['/levels']);
+        return;
+      }
+      this.gameService.startGame(level);
+    }
+
     this.setupConfetti();
   }
 
@@ -105,6 +114,11 @@ export class GamePlayComponent implements OnInit, OnDestroy {
     this.audioService.playSuccess();
     this.gameService.startActiveQuiz();
     this.focusInput();
+  }
+
+  finishTrainingSession() {
+    this.audioService.playSuccess();
+    this.router.navigate(['/summary']);
   }
 
   submitTypedAnswer() {
@@ -129,9 +143,13 @@ export class GamePlayComponent implements OnInit, OnDestroy {
       this.addFloatingFeedback('✨ Correct !', 'correct');
     } else {
       this.audioService.playError();
-      this.gameService.applyTimePenalty(5);
-      this.triggerPenaltyBadge();
-      this.addFloatingFeedback('+5s ⚠️', 'wrong');
+      if (this.gameService.isTimerEnabled()) {
+        this.gameService.applyTimePenalty(5);
+        this.triggerPenaltyBadge();
+        this.addFloatingFeedback('+5s ⚠️', 'wrong');
+      } else {
+        this.addFloatingFeedback('❌ Oups !', 'wrong');
+      }
     }
 
     // Submit answer immediately to advance question without blocking delay
@@ -143,7 +161,7 @@ export class GamePlayComponent implements OnInit, OnDestroy {
       const totalTime = this.gameService.gameDuration();
       
       let isNewRecord = false;
-      if (level) {
+      if (level && this.gameService.isTimerEnabled()) {
         const recordResult = this.profileService.updateProfileProgress(level.id, score, totalTime);
         isNewRecord = recordResult.isNewRecord;
       }
@@ -183,6 +201,8 @@ export class GamePlayComponent implements OnInit, OnDestroy {
     this.typedAnswer = '';
   }
 
+
+
   private addFloatingFeedback(text: string, type: 'correct' | 'wrong') {
     const id = ++this.nextFeedbackId;
     const offsetX = (Math.random() - 0.5) * 60;
@@ -214,14 +234,14 @@ export class GamePlayComponent implements OnInit, OnDestroy {
     }, 50);
   }
 
-  // --- HTML5 Confetti Logic ---
+  // --- HTML5 Full-Screen Confetti Logic ---
   private setupConfetti() {
     const canvas = this.canvasRef()?.nativeElement;
     if (!canvas) return;
 
     const resizeCanvas = () => {
-      canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
-      canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -234,32 +254,48 @@ export class GamePlayComponent implements OnInit, OnDestroy {
   }
 
   private triggerConfetti() {
-    const canvas = this.canvasRef()?.nativeElement;
-    if (!canvas) return;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-    const count = 40;
-    // Sprays from bottom left & right
-    for (let i = 0; i < count / 2; i++) {
-      this.particles.push(this.createParticle(0, canvas.height, 45));
+    // 1. Center radial blast (70 particles)
+    for (let i = 0; i < 70; i++) {
+      const angle = (i / 70) * Math.PI * 2 + (Math.random() * 0.2 - 0.1);
+      const velocity = 12 + Math.random() * 20;
+      this.particles.push({
+        x: width / 2,
+        y: height / 2,
+        size: 8 + Math.random() * 12,
+        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+        speedX: Math.cos(angle) * velocity,
+        speedY: Math.sin(angle) * velocity - 2,
+        rotation: Math.random() * 360,
+        rotationSpeed: Math.random() * 14 - 7,
+        opacity: 1
+      });
     }
-    for (let i = 0; i < count / 2; i++) {
-      this.particles.push(this.createParticle(canvas.width, canvas.height, 135));
+
+    // 2. Four screen corners blast (80 particles)
+    for (let i = 0; i < 20; i++) {
+      this.particles.push(this.createParticle(0, 0, 45));
+      this.particles.push(this.createParticle(width, 0, 135));
+      this.particles.push(this.createParticle(0, height, -45));
+      this.particles.push(this.createParticle(width, height, -135));
     }
   }
 
   private createParticle(x: number, y: number, angleDeg: number): ConfettiParticle {
-    const velocity = 8 + Math.random() * 12;
+    const velocity = 12 + Math.random() * 18;
     const angleRad = (angleDeg + (Math.random() * 40 - 20)) * (Math.PI / 180);
     
     return {
       x,
       y,
-      size: 5 + Math.random() * 7,
+      size: 7 + Math.random() * 10,
       color: this.colors[Math.floor(Math.random() * this.colors.length)],
-      speedX: Math.cos(angleRad) * velocity * (angleDeg > 90 ? -1 : 1),
-      speedY: -Math.sin(angleRad) * velocity - 2,
+      speedX: Math.cos(angleRad) * velocity * (y === 0 ? 1 : (angleDeg > 90 ? -1 : 1)),
+      speedY: Math.sin(angleRad) * velocity * (y === 0 ? 1 : -1),
       rotation: Math.random() * 360,
-      rotationSpeed: Math.random() * 10 - 5,
+      rotationSpeed: Math.random() * 12 - 6,
       opacity: 1
     };
   }
@@ -276,12 +312,12 @@ export class GamePlayComponent implements OnInit, OnDestroy {
       const p = this.particles[i];
       p.x += p.speedX;
       p.y += p.speedY;
-      p.speedY += 0.25;
+      p.speedY += 0.22;
       p.speedX *= 0.98;
       p.rotation += p.rotationSpeed;
-      p.opacity -= 0.018;
+      p.opacity -= 0.015;
 
-      if (p.opacity <= 0 || p.y > canvas.height) {
+      if (p.opacity <= 0 || p.y > canvas.height + 50 || p.x < -50 || p.x > canvas.width + 50) {
         this.particles.splice(i, 1);
         continue;
       }

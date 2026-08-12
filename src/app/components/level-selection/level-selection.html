@@ -1,6 +1,9 @@
 <div class="level-page-container">
   @if (profileService.currentProfile(); as profile) {
     <div class="hero-section">
+      <button class="back-menu-btn" routerLink="/menu" (click)="audioService.playClick()">
+        ⬅️ Menu principal
+      </button>
       <h1 class="page-title">Choisis ta mission mathématique, <span class="player-highlight">{{ profile.name }}</span> !</h1>
       <p class="subtitle">Réussis les niveaux avec au moins 8/10 pour débloquer le défi suivant !</p>
     </div>

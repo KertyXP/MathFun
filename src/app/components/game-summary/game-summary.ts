@@ -110,8 +110,12 @@ export class GameSummaryComponent implements OnInit, OnDestroy {
     const level = this.gameService.currentLevel();
     if (!level) return;
     this.audioService.playClick();
-    this.gameService.startGame(level);
-    this.router.navigate(['/game', level.id]);
+    if (this.gameService.isTimerEnabled()) {
+      this.gameService.startGame(level);
+      this.router.navigate(['/game', level.id]);
+    } else {
+      this.router.navigate(['/game', 99]);
+    }
   }
 
   // --- HTML5 Confetti Engine ---

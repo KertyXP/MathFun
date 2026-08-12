@@ -13,6 +13,25 @@
   animation: fadeInDown 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.back-menu-btn {
+  background: var(--card-bg, #ffffff);
+  color: var(--text-color, #2d3748);
+  border: 2px solid var(--border-color, #e2e8f0);
+  border-radius: 14px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.back-menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
 .page-title {
   font-family: 'Outfit', sans-serif;
   font-size: 2.8rem;

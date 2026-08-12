@@ -1,0 +1,40 @@
+<div class="menu-page-container">
+  @if (profileService.currentProfile(); as profile) {
+    <div class="hero-section">
+      <h1 class="main-title">Bonjour, <span class="player-name">{{ profile.name }}</span> {{ profile.avatar }} !</h1>
+      <p class="subtitle">Que veux-tu faire aujourd'hui ? Choisis ton mode de jeu !</p>
+    </div>
+
+    <div class="mode-cards-grid">
+      <!-- Card 1: Game & Missions / Challenge Mode -->
+      <div class="mode-card challenge-card animate-card" (click)="navigateTo('/levels')">
+        <div class="card-icon-badge">🏆</div>
+        <div class="card-content">
+          <h2 class="card-title">Jeu & Missions</h2>
+          <p class="card-description">
+            Parcours les 6 niveaux, défie le chronomètre et débloque de nouvelles aventures !
+          </p>
+          <div class="card-footer">
+            <span class="mode-tag challenge-tag">⏱️ Avec Chrono</span>
+            <button class="play-mode-btn challenge-btn">Relever le défi 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Multiplication Table Training Mode -->
+      <div class="mode-card practice-card animate-card" (click)="navigateTo('/multiplication')">
+        <div class="card-icon-badge">✖️</div>
+        <div class="card-content">
+          <h2 class="card-title">Entraînement aux Tables</h2>
+          <p class="card-description">
+            Révise tes tables de multiplication de 1 à 10 sans aucun chronomètre et à ton rythme !
+          </p>
+          <div class="card-footer">
+            <span class="mode-tag practice-tag">🌱 Sans Chrono</span>
+            <button class="play-mode-btn practice-btn">S'entraîner 🎯</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

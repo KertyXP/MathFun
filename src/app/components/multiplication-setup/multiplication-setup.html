@@ -1,0 +1,68 @@
+<div class="setup-page-container">
+  <div class="setup-card animate-card">
+    <div class="setup-header">
+      <button class="back-btn" routerLink="/menu" (click)="audioService.playClick()">
+        ⬅️ Menu
+      </button>
+      <h1 class="setup-title">Entraînement aux Tables ✖️</h1>
+    </div>
+
+    <p class="setup-instruction">
+      Choisis les tables que tu veux réviser aujourd'hui :
+    </p>
+
+    <!-- Global Controls -->
+    <div class="selection-actions">
+      <button 
+        type="button" 
+        class="select-all-btn"
+        (click)="toggleSelectAll()"
+      >
+        @if (selectedTables().length === availableTables.length) {
+          ✖️ Désélectionner tout
+        } @else {
+          ✨ Tout sélectionner (1 à 10)
+        }
+      </button>
+      
+      <span class="selection-count">
+        {{ selectedTables().length }} table(s) sélectionnée(s)
+      </span>
+    </div>
+
+    <!-- 10 Table Buttons Grid -->
+    <div class="tables-grid">
+      @for (table of availableTables; track table) {
+        <button 
+          type="button" 
+          class="table-card"
+          [class.selected]="isSelected(table)"
+          (click)="toggleTable(table)"
+        >
+          <div class="table-check-indicator">
+            @if (isSelected(table)) {
+              ✅
+            }
+          </div>
+          <div class="table-big-number">{{ table }}</div>
+          <div class="table-label">Table de {{ table }}</div>
+        </button>
+      }
+    </div>
+
+    <!-- Start Practice Button -->
+    <div class="setup-footer">
+      <button 
+        type="button" 
+        class="start-training-btn"
+        [disabled]="selectedTables().length === 0"
+        (click)="startPractice()"
+      >
+        Commencer l'entraînement ! 🚀
+      </button>
+      @if (selectedTables().length === 0) {
+        <div class="warning-text">Sélectionne au moins une table pour démarrer !</div>
+      }
+    </div>
+  </div>
+</div>

@@ -48,13 +48,13 @@ export class ProfileSelectionComponent {
     this.showCreateForm = false;
     
     // Redirect to levels on success
-    this.router.navigate(['/levels']);
+    this.router.navigate(['/menu']);
   }
 
   selectProfile(profile: Profile) {
     this.audioService.playSuccess();
     this.profileService.selectProfile(profile.id);
-    this.router.navigate(['/levels']);
+    this.router.navigate(['/menu']);
   }
 
   deleteProfile(id: string, event: Event) {
