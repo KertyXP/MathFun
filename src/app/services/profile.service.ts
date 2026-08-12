@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Profile, LevelRecord } from '../models/profile.model';
+import { GAME_LEVELS } from '../config/game-levels';
 
 @Injectable({
   providedIn: 'root'
@@ -106,9 +107,9 @@ export class ProfileService {
 
     const updatedProfiles = this.profiles().map(p => {
       if (p.id === current.id) {
-        // Calculate new level unlock (levelId goes 1 to 5)
+        // Calculate new level unlock dynamically based on total levels
         let nextUnlockedLevel = p.unlockedLevel;
-        if (score >= 8 && p.unlockedLevel === levelId && levelId < 5) {
+        if (score >= 8 && p.unlockedLevel === levelId && levelId < GAME_LEVELS.length) {
           nextUnlockedLevel = levelId + 1;
           unlockedNextLevel = true;
         }
@@ -174,8 +175,8 @@ export class ProfileService {
           }
         }
 
-        // 4. Ultimate solver badge for beating Level 5
-        if (levelId === 5 && score >= 8) {
+        // 4. Ultimate solver badge for beating the final level
+        if (levelId === GAME_LEVELS.length && score >= 8) {
           const geniusBadge = 'Génie des Maths 👑';
           if (!currentBadges.has(geniusBadge)) {
             currentBadges.add(geniusBadge);

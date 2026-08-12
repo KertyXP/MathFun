@@ -138,15 +138,34 @@ export class GameService {
     let correctAnswer = 0;
 
     if (op === '+') {
-      num1 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-      num2 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+      if (level.minVal2 !== undefined && level.maxVal2 !== undefined) {
+        const valA = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        const valB = Math.floor(Math.random() * (level.maxVal2 - level.minVal2 + 1)) + level.minVal2;
+        if (Math.random() < 0.5) {
+          num1 = valA;
+          num2 = valB;
+        } else {
+          num1 = valB;
+          num2 = valA;
+        }
+      } else {
+        num1 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        num2 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+      }
       correctAnswer = num1 + num2;
     } else if (op === '-') {
       // Subtraction: ensure positive results for children
-      const valA = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-      const valB = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-      num1 = Math.max(valA, valB);
-      num2 = Math.min(valA, valB);
+      if (level.minVal2 !== undefined && level.maxVal2 !== undefined) {
+        const sMin = level.subMinVal !== undefined ? level.subMinVal : 2;
+        const sMax = level.subMaxVal !== undefined ? level.subMaxVal : 11;
+        num1 = Math.floor(Math.random() * (level.maxVal2 - level.minVal2 + 1)) + level.minVal2;
+        num2 = Math.floor(Math.random() * (sMax - sMin + 1)) + sMin;
+      } else {
+        const valA = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        const valB = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        num1 = Math.max(valA, valB);
+        num2 = Math.min(valA, valB);
+      }
       correctAnswer = num1 - num2;
     } else {
       // Multiplication

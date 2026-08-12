@@ -5,6 +5,10 @@ export interface GameLevel {
   icon: string; // Emoji
   minVal: number;
   maxVal: number;
+  minVal2?: number;
+  maxVal2?: number;
+  subMinVal?: number;
+  subMaxVal?: number;
   operations: ('+' | '-' | '*')[];
   questionsCount: number;
   passingScore: number; // e.g. 8 out of 10
@@ -28,6 +32,21 @@ export const GAME_LEVELS: GameLevel[] = [
   },
   {
     id: 2,
+    name: 'Super Additions',
+    description: 'Additionne un chiffre (1-9) avec un grand nombre (11-30) ! 7 + 15 = ?',
+    icon: '🚀',
+    minVal: 1,
+    maxVal: 9,
+    minVal2: 11,
+    maxVal2: 30,
+    operations: ['+'],
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+    cardColor: '#0284C7'
+  },
+  {
+    id: 3,
     name: 'Safari des Soustractions',
     description: 'Soustractions à un chiffre ! 7 - 3 = ?',
     icon: '🦊',
@@ -40,12 +59,16 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#00D2D3'
   },
   {
-    id: 3,
+    id: 4,
     name: 'Double Défi',
-    description: 'Les nombres à deux chiffres entrent en jeu ! 12 + 5 = ?',
+    description: 'Additions et soustractions avec de grands nombres ! 7 + 15 = ? ou 23 - 5 = ?',
     icon: '🦁',
-    minVal: 5,
-    maxVal: 20,
+    minVal: 1,
+    maxVal: 9,
+    minVal2: 11,
+    maxVal2: 30,
+    subMinVal: 2,
+    subMaxVal: 11,
     operations: ['+', '-'],
     questionsCount: 10,
     passingScore: 8,
@@ -53,7 +76,7 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#10AC84'
   },
   {
-    id: 4,
+    id: 5,
     name: 'Magie des Multiplications',
     description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
     icon: '🦄',
@@ -66,7 +89,7 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#FF9FF3'
   },
   {
-    id: 5,
+    id: 6,
     name: 'Génie des Maths',
     description: 'Le défi ultime de maths ! Réussiras-tu ?',
     icon: '👑',
