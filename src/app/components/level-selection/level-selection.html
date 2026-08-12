@@ -1,0 +1,67 @@
+<div class="level-page-container">
+  @if (profileService.currentProfile(); as profile) {
+    <div class="hero-section">
+      <h1 class="page-title">Choisis ta mission mathématique, <span class="player-highlight">{{ profile.name }}</span> !</h1>
+      <p class="subtitle">Réussis les niveaux avec au moins 8/10 pour débloquer le défi suivant !</p>
+    </div>
+
+    <!-- Levels Grid -->
+    <div class="levels-grid">
+      @for (level of levels; track level.id) {
+        @let unlocked = isLevelUnlocked(level.id);
+        <div 
+          class="level-card" 
+          [class.locked]="!unlocked"
+          [style.background]="unlocked ? level.bgColor : 'var(--card-bg)'"
+          (click)="selectLevel(level)"
+        >
+          <div class="level-badge" [style.background]="level.cardColor">Mission {{ level.id }}</div>
+          
+          <div class="level-icon-wrapper">
+            @if (unlocked) {
+              <span class="level-emoji">{{ level.icon }}</span>
+            } @else {
+              <span class="lock-emoji">🔒</span>
+            }
+          </div>
+
+          <h2 class="level-name">{{ level.name }}</h2>
+          <p class="level-description">{{ level.description }}</p>
+
+          <div class="level-footer">
+            @if (unlocked) {
+              <button class="play-btn" [style.background]="level.cardColor">Commencer ! 🚀</button>
+            } @else {
+              <div class="locked-text">Verrouillé</div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="achievements-section">
+      <h2 class="section-title">Tes badges & succès 🎖️</h2>
+      
+      @if (profile.badges.length > 0) {
+        <div class="badges-container">
+          @for (badge of profile.badges; track badge) {
+            <div class="badge-item">
+              <span class="badge-icon">🎖️</span>
+              <span class="badge-name">{{ badge }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="no-badges-card">
+          <p>Aucun badge obtenu pour le moment ! Réponds correctement aux 10 questions ou réussis le Niveau 5 pour obtenir tes premiers badges ! 🌟</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="no-profile-warning">
+      <h2>Veuillez d'abord sélectionner un profil !</h2>
+      <button class="btn btn-primary" routerLink="/profiles">Voir les profils</button>
+    </div>
+  }
+</div>

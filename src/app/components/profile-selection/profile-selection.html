@@ -1,0 +1,77 @@
+<div class="profile-page-container">
+  
+  @if (!showCreateForm) {
+    <div class="hero-section">
+      <h1 class="main-title">Prêt à t'amuser avec les <span class="math-accent">Maths</span> <span class="fun-accent">!</span></h1>
+      <p class="subtitle">Sélectionne ton profil pour jouer, ou crées-en un nouveau !</p>
+    </div>
+
+    <div class="profiles-grid">
+      @for (profile of profileService.allProfiles(); track profile.id) {
+        <div class="profile-card animate-card" (click)="selectProfile(profile)">
+          <button class="delete-btn" (click)="deleteProfile(profile.id, $event)" title="Supprimer le profil">×</button>
+          <div class="card-avatar">{{ profile.avatar }}</div>
+          <div class="card-name">{{ profile.name }}</div>
+          <div class="card-stats">
+            <span class="stat-badge">⭐ {{ profile.totalPoints }} pts</span>
+            <span class="stat-badge">🎖️ Niv {{ profile.unlockedLevel }}</span>
+          </div>
+        </div>
+      }
+
+      <div class="profile-card create-card animate-card" (click)="toggleCreateForm(true)">
+        <div class="card-avatar plus-avatar">➕</div>
+        <div class="card-name create-label">Nouveau Joueur</div>
+        <p class="create-subtext">Ajouter un aventurier</p>
+      </div>
+    </div>
+  } @else {
+    <div class="creation-modal">
+      <div class="modal-card">
+        <h2 class="modal-title">Qui va jouer ? 🌟</h2>
+        
+        <form (ngSubmit)="createProfile()" #profileForm="ngForm">
+          <div class="form-group">
+            <label for="playerName" class="form-label">Nom de l'aventurier</label>
+            <input 
+              type="text" 
+              id="playerName" 
+              name="playerName" 
+              class="name-input" 
+              placeholder="Ton nom ici..." 
+              [(ngModel)]="newName" 
+              required 
+              maxlength="12"
+              autocomplete="off"
+              #nameInput="ngModel"
+            />
+            @if (nameInput.invalid && nameInput.touched) {
+              <span class="validation-error">Veuillez entrer un nom !</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Choisis ta mascotte</label>
+            <div class="avatar-picker-grid">
+              @for (avatar of avatars; track avatar) {
+                <button 
+                  type="button" 
+                  class="avatar-option" 
+                  [class.selected]="selectedAvatar === avatar"
+                  (click)="selectAvatar(avatar)"
+                >
+                  {{ avatar }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="toggleCreateForm(false)">Retour</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!newName.trim()">C'est parti ! 🚀</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

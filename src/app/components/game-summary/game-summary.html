@@ -1,0 +1,91 @@
+<div class="summary-page-container">
+  <!-- Confetti Canvas layer -->
+  <canvas #confettiCanvas class="confetti-canvas"></canvas>
+
+  @if (gameService.currentLevel(); as level) {
+    <div class="summary-card">
+      
+      <!-- New Record Trophy Header -->
+      @if (isNewRecord()) {
+        <div class="record-badge animate-pop">
+          <div class="trophy-icon">🏆</div>
+          <h2 class="record-title">Nouveau record personnel !</h2>
+          <p class="record-desc">Tu deviens de plus en plus rapide et fort ! Continue comme ça !</p>
+        </div>
+      } @else {
+        <h1 class="summary-title">Mission accomplie !</h1>
+        <p class="summary-subtitle">{{ level.name }}</p>
+      }
+
+      <!-- Animated Stars Review -->
+      <div class="stars-container">
+        <span class="star" [class.active]="starsCount() >= 1">⭐</span>
+        <span class="star middle-star" [class.active]="starsCount() >= 2">⭐</span>
+        <span class="star" [class.active]="starsCount() >= 3">⭐</span>
+      </div>
+
+      <!-- Score & Time Banner -->
+      <div class="score-banner" [class.passed]="passed()">
+        <div class="score-text">
+          {{ gameService.correctAnswersCount() }} / {{ gameService.totalQuestionsCount() }} correctes !
+        </div>
+        <div class="time-text">
+          ⚡ Réussi en <span class="time-highlight">{{ gameService.gameDuration().toFixed(2) }} secondes</span>
+        </div>
+      </div>
+
+      <!-- Progression Status Notification -->
+      <div class="status-message">
+        @if (unlockedNext()) {
+          <div class="alert alert-success bounce-in">
+            <h3>🎉 Niveau débloqué !</h3>
+            <p>Génial ! Tu as débloqué la prochaine mission mathématique !</p>
+          </div>
+        } @else if (passed()) {
+          <div class="alert alert-success bounce-in">
+            <h3>🎉 Mission réussie !</h3>
+            <p>Bravo ! Continue de t'entraîner pour obtenir 3 étoiles !</p>
+          </div>
+        } @else {
+          <div class="alert alert-warning bounce-in">
+            <h3>💪 Bon effort !</h3>
+            <p>Obtiens au moins 8 réponses correctes pour débloquer le niveau suivant. Réessaye !</p>
+          </div>
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-secondary" routerLink="/levels" (click)="audioService.playClick()">
+          🗺️ Carte des niveaux
+        </button>
+        <button class="btn btn-primary" (click)="replayLevel()">
+          🔄 Rejouer
+        </button>
+      </div>
+
+      <!-- Detailed Review Checklist -->
+      <div class="review-section">
+        <h3 class="review-title">Bilan de la mission 📝</h3>
+        <div class="review-list">
+          @for (answer of gameService.allAnswers(); track $index) {
+            <div class="review-item" [class.correct-item]="answer.isCorrect" [class.wrong-item]="!answer.isCorrect">
+              <div class="review-status-icon">
+                {{ answer.isCorrect ? '✔️' : '❌' }}
+              </div>
+              <div class="review-formula">
+                {{ answer.question.text }} = 
+                <span class="answer-val">{{ answer.selectedAnswer === null ? 'Pas de réponse' : answer.selectedAnswer }}</span>
+              </div>
+              @if (!answer.isCorrect) {
+                <div class="correct-answer-reveal">
+                  (Correct : {{ answer.question.correctAnswer }})
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

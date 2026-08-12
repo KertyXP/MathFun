@@ -1,0 +1,139 @@
+<div class="game-page-container">
+  <!-- Confetti Canvas layer -->
+  <canvas #confettiCanvas class="confetti-canvas"></canvas>
+
+  @if (gameService.currentLevel(); as level) {
+    <!-- Top Game Control Bar -->
+    <div class="game-header">
+      <button class="exit-game-btn" routerLink="/levels" (click)="audioService.playClick()">
+        ⬅️ Quitter
+      </button>
+
+      <div class="level-indicator-chip" [style.background]="level.cardColor">
+        <span>{{ level.icon }}</span>
+        <span>{{ level.name }}</span>
+      </div>
+
+      <!-- Precise Stopwatch Display with Penalty alert -->
+      <div class="stopwatch-container">
+        <div class="stopwatch-display">
+          ⏱️ <span class="stopwatch-val">{{ gameService.gameDuration().toFixed(1) }}s</span>
+        </div>
+        @if (showPenalty()) {
+          <div class="penalty-badge">+5s ⚠️</div>
+        }
+      </div>
+    </div>
+
+    <!-- Active Game/Lobby Card -->
+    <div class="game-card">
+      
+      @if (!gameService.isGameStarted()) {
+        <!-- Pre-Game Lobby Screen -->
+        <div class="lobby-screen animate-lobby">
+          <div class="lobby-icon" [style.background]="level.bgColor">{{ level.icon }}</div>
+          <h2 class="lobby-title">Es-tu prêt, aventurier ?</h2>
+          <p class="lobby-subtitle">
+            Tu vas affronter <strong>{{ gameService.totalQuestionsCount() }} questions</strong> dans cette mission.
+            Résous-les aussi vite et précisément que possible pour battre un nouveau record !
+          </p>
+
+          <button class="start-game-btn" (click)="startQuiz()" [style.background]="level.cardColor">
+            C'est parti ! 🚀
+          </button>
+          <div class="keyboard-hint">Ou appuie sur <kbd>ENTRÉE</kbd> sur ton clavier !</div>
+        </div>
+      } @else {
+        <!-- Main Game Play Screen -->
+        <!-- Progress Bar (Mascot Path) -->
+        <div class="mascot-progress-container">
+          <div class="progress-line"></div>
+          <div 
+            class="mascot-runner"
+            [style.left.%]="(gameService.currentQuestionIndex() / gameService.totalQuestionsCount()) * 100"
+          >
+            {{ level.icon }}
+          </div>
+          <div class="progress-flag">🏁</div>
+        </div>
+
+        <!-- Floating Non-Blocking Feedback Badges -->
+        <div class="floating-feedback-layer">
+          @for (fb of floatingFeedbacks(); track fb.id) {
+            <div 
+              class="floating-feedback-badge" 
+              [class.correct]="fb.type === 'correct'"
+              [class.wrong]="fb.type === 'wrong'"
+              [style.transform]="'translateX(' + fb.offsetX + 'px)'"
+            >
+              {{ fb.text }}
+            </div>
+          }
+        </div>
+
+        <div class="question-meta">
+          Question {{ gameService.currentQuestionIndex() + 1 }} sur {{ gameService.totalQuestionsCount() }}
+        </div>
+
+        <!-- Math Formula Display -->
+        @if (gameService.currentQuestion(); as question) {
+          <div class="formula-container">
+            <span class="math-num animate-num">{{ question.num1 }}</span>
+            <span class="math-op">{{ question.operation === '*' ? '×' : question.operation }}</span>
+            <span class="math-num animate-num">{{ question.num2 }}</span>
+            <span class="math-equals">=</span>
+            
+            <div class="input-container">
+              <input 
+                #answerInput
+                type="number"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                class="math-answer-input"
+                [(ngModel)]="typedAnswer"
+                (keydown.enter)="submitTypedAnswer()"
+                placeholder="?"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+        <!-- Custom Kid-Friendly Virtual Numpad -->
+        <div class="virtual-numpad-container">
+          <div class="numpad-grid">
+            <button type="button" class="numpad-btn" (click)="appendDigit('1')">1</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('2')">2</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('3')">3</button>
+            
+            <button type="button" class="numpad-btn" (click)="appendDigit('4')">4</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('5')">5</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('6')">6</button>
+            
+            <button type="button" class="numpad-btn" (click)="appendDigit('7')">7</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('8')">8</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('9')">9</button>
+            
+            <button type="button" class="numpad-btn clear-btn animate-btn" (click)="clearDigits()">C</button>
+            <button type="button" class="numpad-btn" (click)="appendDigit('0')">0</button>
+            <button type="button" class="numpad-btn backspace-btn animate-btn" (click)="backspaceDigit()">⌫</button>
+          </div>
+          
+          <button 
+            type="button" 
+            class="numpad-confirm-btn" 
+            [disabled]="!hasTypedAnswer" 
+            [style.background]="level.cardColor"
+            (click)="submitTypedAnswer()"
+          >
+            Valider 🚀
+          </button>
+          
+          <div class="keyboard-enter-hint" [class.hidden]="!hasTypedAnswer">
+            Ou appuie sur <kbd>ENTRÉE</kbd>
+          </div>
+        </div>
+        }
+      }
+    </div>
+  }
+</div>

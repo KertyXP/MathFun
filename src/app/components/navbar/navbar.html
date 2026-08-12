@@ -1,0 +1,38 @@
+<nav class="navbar">
+  <div class="nav-brand" routerLink="/levels" (click)="audioService.playClick()">
+    <span class="logo-emoji">🎒</span>
+    <span class="logo-text">Math<span class="logo-fun">Fun</span></span>
+  </div>
+
+  <div class="nav-controls">
+    @if (profileService.currentProfile(); as profile) {
+      <div class="profile-chip" routerLink="/levels" (click)="audioService.playClick()">
+        <span class="avatar-icon">{{ profile.avatar }}</span>
+        <span class="profile-name">{{ profile.name }}</span>
+        <span class="points-badge">⭐ {{ profile.totalPoints }}</span>
+      </div>
+    }
+
+    <button class="nav-btn sound-btn" [class.sound-off]="!audioService.isSoundEnabled()" (click)="toggleSound()" aria-label="Activer/Désactiver le son">
+      @if (audioService.isSoundEnabled()) {
+        🔊
+      } @else {
+        🔇
+      }
+    </button>
+
+    <button class="nav-btn theme-btn" (click)="toggleTheme()" aria-label="Changer le thème">
+      @if (isDarkTheme()) {
+        ☀️
+      } @else {
+        🌙
+      }
+    </button>
+
+    @if (profileService.currentProfile()) {
+      <button class="nav-btn exit-btn" (click)="changeProfile()" title="Changer de profil">
+        🚪
+      </button>
+    }
+  </div>
+</nav>
