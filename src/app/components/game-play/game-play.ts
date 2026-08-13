@@ -66,12 +66,49 @@ export class GamePlayComponent implements OnInit, OnDestroy {
     return String(this.typedAnswer).trim() !== '';
   }
 
-  // Listen for Enter key globally to start the quiz
-  @HostListener('window:keydown.enter', ['$event'])
-  handleGlobalEnter(event: Event) {
+  // Listen for keyboard events globally (physical keyboard: top row digits, numpad, backspace, enter, escape)
+  @HostListener('window:keydown', ['$event'])
+  handleGlobalKeydown(event: KeyboardEvent) {
     if (!this.gameService.isGameStarted()) {
+      if (event.key === 'Enter' || event.code === 'NumpadEnter') {
+        event.preventDefault();
+        this.startQuiz();
+      }
+      return;
+    }
+
+    if (this.gameService.isGameOver()) return;
+
+    // Check for physical number keys (both top row Digit0-9 and right Numpad0-9, and direct keys)
+    const digitMatch = event.code.match(/^(?:Digit|Numpad)([0-9])$/);
+    if (digitMatch) {
       event.preventDefault();
-      this.startQuiz();
+      this.appendDigit(digitMatch[1]);
+      return;
+    }
+
+    if (event.key >= '0' && event.key <= '9') {
+      event.preventDefault();
+      this.appendDigit(event.key);
+      return;
+    }
+
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+      event.preventDefault();
+      this.backspaceDigit();
+      return;
+    }
+
+    if (event.key === 'Enter' || event.code === 'NumpadEnter') {
+      event.preventDefault();
+      this.submitTypedAnswer();
+      return;
+    }
+
+    if (event.key === 'Escape' || event.key.toLowerCase() === 'c') {
+      event.preventDefault();
+      this.clearDigits();
+      return;
     }
   }
 

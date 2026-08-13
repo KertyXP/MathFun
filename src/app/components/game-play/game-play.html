@@ -103,12 +103,11 @@
             <div class="input-container">
               <input 
                 #answerInput
-                type="number"
-                pattern="[0-9]*"
-                inputmode="numeric"
+                type="text"
+                inputmode="none"
+                readonly
                 class="math-answer-input"
                 [(ngModel)]="typedAnswer"
-                (keydown.enter)="submitTypedAnswer()"
                 placeholder="?"
                 autocomplete="off"
               />
