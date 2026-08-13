@@ -151,7 +151,7 @@ export class GameService {
     // In unlimited training mode, replenish more questions if getting near the end
     if (!this.isTimerMode()) {
       if (nextIdx >= this.questions().length - 3) {
-        const extraQuestions = this.generateMultiplicationQuestions(this.trainingTables(), 20);
+        const extraQuestions = this.generateMultiplicationQuestions(this.trainingTables(), 20, this.questions());
         this.questions.update(q => [...q, ...extraQuestions]);
       }
     } else {
@@ -173,11 +173,23 @@ export class GameService {
     }
   }
 
-  // Generate random questions according to level guidelines
+  private isDuplicateInRecent(q: Question, history: Question[], recentCount = 5): boolean {
+    if (history.length === 0) return false;
+    const recent = history.slice(-recentCount);
+    return recent.some(item => item.text === q.text);
+  }
+
+  // Generate random questions according to level guidelines (ensuring no duplicates in recent 5)
   private generateQuestions(level: GameLevel): Question[] {
     const list: Question[] = [];
     for (let i = 0; i < this.QUESTIONS_COUNT; i++) {
-      list.push(this.generateSingleQuestion(level));
+      let q: Question;
+      let attempts = 0;
+      do {
+        q = this.generateSingleQuestion(level);
+        attempts++;
+      } while (attempts < 50 && this.isDuplicateInRecent(q, list, 5));
+      list.push(q);
     }
     return list;
   }
@@ -234,24 +246,30 @@ export class GameService {
     };
   }
 
-  private generateMultiplicationQuestions(tables: number[], count = 10): Question[] {
+  private generateMultiplicationQuestions(tables: number[], count = 10, existingList: Question[] = []): Question[] {
     const list: Question[] = [];
     for (let i = 0; i < count; i++) {
-      const table = tables[Math.floor(Math.random() * tables.length)];
-      const multiplier = Math.floor(Math.random() * 10) + 1; // 1 to 10
-      let num1 = table;
-      let num2 = multiplier;
-      if (Math.random() < 0.5) {
-        num1 = multiplier;
-        num2 = table;
-      }
-      list.push({
-        text: `${num1} × ${num2}`,
-        num1,
-        num2,
-        operation: '*',
-        correctAnswer: num1 * num2
-      });
+      let q: Question;
+      let attempts = 0;
+      do {
+        const table = tables[Math.floor(Math.random() * tables.length)];
+        const multiplier = Math.floor(Math.random() * 10) + 1; // 1 to 10
+        let num1 = table;
+        let num2 = multiplier;
+        if (Math.random() < 0.5) {
+          num1 = multiplier;
+          num2 = table;
+        }
+        q = {
+          text: `${num1} × ${num2}`,
+          num1,
+          num2,
+          operation: '*',
+          correctAnswer: num1 * num2
+        };
+        attempts++;
+      } while (attempts < 50 && this.isDuplicateInRecent(q, [...existingList, ...list], 5));
+      list.push(q);
     }
     return list;
   }
