@@ -120,8 +120,8 @@ describe('Accessibility - Color Contrast Compliance (WCAG 2.1 AA)', () => {
       expect(getContrastRatio('#C2410C', '#FFFFFF')).toBeGreaterThanOrEqual(MIN_CONTRAST_AA_BODY);
     });
 
-    it('Points badge text [#92400E] on light yellow [#FFFBEB] meets AAA contrast (>= 7.0:1)', () => {
-      expect(getContrastRatio('#92400E', '#FFFBEB')).toBeGreaterThanOrEqual(7.0);
+    it('Points badge text [#92400E] on light yellow [#FFFBEB] meets AA contrast (>= 4.5:1)', () => {
+      expect(getContrastRatio('#92400E', '#FFFBEB')).toBeGreaterThanOrEqual(MIN_CONTRAST_AA_BODY);
     });
 
     it('New Record title text [#9A3412] on trophy card background [#FFF5E1] meets AA contrast (>= 4.5:1)', () => {

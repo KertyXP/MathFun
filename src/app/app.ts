@@ -12,15 +12,17 @@ export class App {
   protected readonly title = signal('MathFun');
 
   constructor() {
-    const savedTheme = localStorage.getItem('mathfun_theme');
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark-theme');
-    } else if (savedTheme === 'light') {
-      document.documentElement.classList.remove('dark-theme');
-    } else {
-      const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
+    if (typeof localStorage !== 'undefined') {
+      const savedTheme = localStorage.getItem('mathfun_theme');
+      if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark-theme');
+      } else if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark-theme');
+      } else {
+        const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+          document.documentElement.classList.add('dark-theme');
+        }
       }
     }
   }

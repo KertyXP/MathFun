@@ -1,15 +1,29 @@
+export type OperationType = '+' | '-' | '*';
+
+export interface OperatorConfig {
+  minVal?: number;
+  maxVal?: number;
+  maxResult?: number;
+  minVal2?: number;
+  maxVal2?: number;
+  subMinVal?: number;
+  subMaxVal?: number;
+}
+
 export interface GameLevel {
   id: number;
   name: string;
   description: string;
   icon: string; // Emoji
-  minVal: number;
-  maxVal: number;
+  operations: OperationType[];
+  operatorConfig?: Partial<Record<OperationType, OperatorConfig>>;
+  minVal?: number;
+  maxVal?: number;
+  maxResult?: number; // Optional maximum sum limit (e.g. sum <= 10)
   minVal2?: number;
   maxVal2?: number;
   subMinVal?: number;
   subMaxVal?: number;
-  operations: ('+' | '-' | '*')[];
   questionsCount: number;
   passingScore: number; // e.g. 8 out of 10
   bgColor: string; // Background gradient class or style
@@ -19,8 +33,22 @@ export interface GameLevel {
 export const GAME_LEVELS: GameLevel[] = [
   {
     id: 1,
+    name: 'Premières Additions',
+    description: 'Additions très faciles jusqu\'à 10 ! 3 + 2 = ?',
+    icon: '🌱',
+    minVal: 1,
+    maxVal: 9,
+    maxResult: 10,
+    operations: ['+'],
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%)',
+    cardColor: '#B45309'
+  },
+  {
+    id: 2,
     name: 'Aventure des Additions',
-    description: 'Additions faciles à un chiffre ! 4 + 2 = ?',
+    description: 'Additions faciles à un chiffre ! 4 + 7 = ?',
     icon: '🐣',
     minVal: 1,
     maxVal: 9,
@@ -29,21 +57,6 @@ export const GAME_LEVELS: GameLevel[] = [
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFF6E5 0%, #FFDCA2 100%)',
     cardColor: '#C2410C'
-  },
-  {
-    id: 2,
-    name: 'Super Additions',
-    description: 'Additionne un chiffre (1-9) avec un grand nombre (11-30) ! 7 + 15 = ?',
-    icon: '🚀',
-    minVal: 1,
-    maxVal: 9,
-    minVal2: 11,
-    maxVal2: 30,
-    operations: ['+'],
-    questionsCount: 10,
-    passingScore: 8,
-    bgColor: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
-    cardColor: '#0284C7'
   },
   {
     id: 3,
@@ -60,6 +73,21 @@ export const GAME_LEVELS: GameLevel[] = [
   },
   {
     id: 4,
+    name: 'Super Additions',
+    description: 'Additionne un chiffre (1-9) avec un grand nombre (11-30) ! 7 + 15 = ?',
+    icon: '🚀',
+    minVal: 1,
+    maxVal: 9,
+    minVal2: 11,
+    maxVal2: 30,
+    operations: ['+'],
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+    cardColor: '#0369A1'
+  },
+  {
+    id: 5,
     name: 'Double Défi',
     description: 'Additions et soustractions avec de grands nombres ! 7 + 15 = ? ou 23 - 5 = ?',
     icon: '🦁',
@@ -76,7 +104,7 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#047857'
   },
   {
-    id: 5,
+    id: 6,
     name: 'Magie des Multiplications',
     description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
     icon: '🦄',
@@ -89,13 +117,16 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#A21CAF'
   },
   {
-    id: 6,
+    id: 7,
     name: 'Génie des Maths',
     description: 'Le défi ultime de maths ! Réussiras-tu ?',
     icon: '👑',
-    minVal: 2,
-    maxVal: 12,
     operations: ['+', '-', '*'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 30 },
+      '-': { minVal: 1, maxVal: 30 },
+      '*': { minVal: 1, maxVal: 10 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',

@@ -211,14 +211,35 @@ export class GameService {
 
   private generateSingleQuestion(level: GameLevel): Question {
     const op = level.operations[Math.floor(Math.random() * level.operations.length)];
+    const opConf = level.operatorConfig?.[op];
+
+    const minVal = opConf?.minVal ?? level.minVal ?? 1;
+    const maxVal = opConf?.maxVal ?? level.maxVal ?? 10;
+    const maxResult = opConf?.maxResult ?? level.maxResult;
+    const minVal2 = opConf?.minVal2 ?? level.minVal2;
+    const maxVal2 = opConf?.maxVal2 ?? level.maxVal2;
+    const subMinVal = opConf?.subMinVal ?? level.subMinVal;
+    const subMaxVal = opConf?.subMaxVal ?? level.subMaxVal;
+
     let num1 = 0;
     let num2 = 0;
     let correctAnswer = 0;
 
     if (op === '+') {
-      if (level.minVal2 !== undefined && level.maxVal2 !== undefined) {
-        const valA = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-        const valB = Math.floor(Math.random() * (level.maxVal2 - level.minVal2 + 1)) + level.minVal2;
+      if (maxResult !== undefined) {
+        const min1 = minVal;
+        const max1 = Math.max(min1, maxResult - minVal);
+        num1 = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
+        const max2 = Math.max(min1, maxResult - num1);
+        num2 = Math.floor(Math.random() * (max2 - min1 + 1)) + min1;
+        if (Math.random() < 0.5) {
+          const temp = num1;
+          num1 = num2;
+          num2 = temp;
+        }
+      } else if (minVal2 !== undefined && maxVal2 !== undefined) {
+        const valA = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        const valB = Math.floor(Math.random() * (maxVal2 - minVal2 + 1)) + minVal2;
         if (Math.random() < 0.5) {
           num1 = valA;
           num2 = valB;
@@ -227,28 +248,28 @@ export class GameService {
           num2 = valA;
         }
       } else {
-        num1 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-        num2 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
       }
       correctAnswer = num1 + num2;
     } else if (op === '-') {
       // Subtraction: ensure positive results for children
-      if (level.minVal2 !== undefined && level.maxVal2 !== undefined) {
-        const sMin = level.subMinVal !== undefined ? level.subMinVal : 2;
-        const sMax = level.subMaxVal !== undefined ? level.subMaxVal : 11;
-        num1 = Math.floor(Math.random() * (level.maxVal2 - level.minVal2 + 1)) + level.minVal2;
+      if (minVal2 !== undefined && maxVal2 !== undefined) {
+        const sMin = subMinVal !== undefined ? subMinVal : 2;
+        const sMax = subMaxVal !== undefined ? subMaxVal : 11;
+        num1 = Math.floor(Math.random() * (maxVal2 - minVal2 + 1)) + minVal2;
         num2 = Math.floor(Math.random() * (sMax - sMin + 1)) + sMin;
       } else {
-        const valA = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-        const valB = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+        const valA = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        const valB = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         num1 = Math.max(valA, valB);
         num2 = Math.min(valA, valB);
       }
       correctAnswer = num1 - num2;
     } else {
       // Multiplication
-      num1 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
-      num2 = Math.floor(Math.random() * (level.maxVal - level.minVal + 1)) + level.minVal;
+      num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+      num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
       correctAnswer = num1 * num2;
     }
 

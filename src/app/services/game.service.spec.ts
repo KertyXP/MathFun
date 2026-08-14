@@ -1,15 +1,42 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { TestBed } from '@angular/core/testing';
 import { GameService } from './game.service';
+import { GAME_LEVELS } from '../config/game-levels';
+
+describe('GameService - Mission 1 (Easy Additions <= 10)', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    service = new GameService();
+  });
+
+  it('should generate questions where sum never exceeds 10 for Level 1', () => {
+    const level1 = GAME_LEVELS.find(l => l.id === 1);
+    expect(level1).toBeDefined();
+    expect(level1!.maxResult).toBe(10);
+    expect(level1!.operations).toEqual(['+']);
+
+    // Run multiple rounds to ensure all randomly generated questions satisfy the constraint
+    for (let round = 0; round < 20; round++) {
+      service.startGame(level1!);
+      for (let i = 0; i < 10; i++) {
+        const q = service.currentQuestion();
+        expect(q).toBeTruthy();
+        expect(q!.operation).toBe('+');
+        expect(q!.num1).toBeGreaterThanOrEqual(1);
+        expect(q!.num2).toBeGreaterThanOrEqual(1);
+        expect(q!.correctAnswer).toBeLessThanOrEqual(10);
+        expect(q!.correctAnswer).toBe(q!.num1 + q!.num2);
+        service.submitAnswer(q!.correctAnswer);
+      }
+    }
+  });
+});
 
 describe('GameService - Multiplication Training Score Window', () => {
   let service: GameService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [GameService]
-    });
-    service = TestBed.inject(GameService);
+    service = new GameService();
   });
 
   it('should initialize multiplication training with 0/0 score', () => {
@@ -74,5 +101,62 @@ describe('GameService - Multiplication Training Score Window', () => {
     // 1 more wrong answer -> window is 10 wrong = 0/10
     service.submitAnswer(99999);
     expect(service.trainingScore().formatted).toBe('0/10');
+  });
+});
+
+describe('GameService - Mission 7 (Operator-Specific Range Configurations)', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    service = new GameService();
+  });
+
+  it('should respect operatorConfig for Level 7 (multiplication 1-10, addition and subtraction 1-30)', () => {
+    const level7 = GAME_LEVELS.find(l => l.id === 7);
+    expect(level7).toBeDefined();
+    expect(level7!.operatorConfig).toBeDefined();
+    expect(level7!.operatorConfig!['*']).toEqual({ minVal: 1, maxVal: 10 });
+    expect(level7!.operatorConfig!['+']).toEqual({ minVal: 1, maxVal: 30 });
+    expect(level7!.operatorConfig!['-']).toEqual({ minVal: 1, maxVal: 30 });
+
+    let seenMul = false;
+    let seenAdd = false;
+    let seenSub = false;
+
+    for (let round = 0; round < 30; round++) {
+      service.startGame(level7!);
+      for (let i = 0; i < 10; i++) {
+        const q = service.currentQuestion();
+        expect(q).toBeTruthy();
+        if (q!.operation === '*') {
+          seenMul = true;
+          expect(q!.num1).toBeGreaterThanOrEqual(1);
+          expect(q!.num1).toBeLessThanOrEqual(10);
+          expect(q!.num2).toBeGreaterThanOrEqual(1);
+          expect(q!.num2).toBeLessThanOrEqual(10);
+          expect(q!.correctAnswer).toBe(q!.num1 * q!.num2);
+        } else if (q!.operation === '+') {
+          seenAdd = true;
+          expect(q!.num1).toBeGreaterThanOrEqual(1);
+          expect(q!.num1).toBeLessThanOrEqual(30);
+          expect(q!.num2).toBeGreaterThanOrEqual(1);
+          expect(q!.num2).toBeLessThanOrEqual(30);
+          expect(q!.correctAnswer).toBe(q!.num1 + q!.num2);
+        } else if (q!.operation === '-') {
+          seenSub = true;
+          expect(q!.num1).toBeGreaterThanOrEqual(1);
+          expect(q!.num1).toBeLessThanOrEqual(30);
+          expect(q!.num2).toBeGreaterThanOrEqual(1);
+          expect(q!.num2).toBeLessThanOrEqual(30);
+          expect(q!.num1).toBeGreaterThanOrEqual(q!.num2); // non-negative result
+          expect(q!.correctAnswer).toBe(q!.num1 - q!.num2);
+        }
+        service.submitAnswer(q!.correctAnswer);
+      }
+    }
+
+    expect(seenMul).toBe(true);
+    expect(seenAdd).toBe(true);
+    expect(seenSub).toBe(true);
   });
 });
