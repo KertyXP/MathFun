@@ -12,7 +12,7 @@ describe('GameService - Mission 1 (Easy Additions <= 10)', () => {
   it('should generate questions where sum never exceeds 10 for Level 1', () => {
     const level1 = GAME_LEVELS.find(l => l.id === 1);
     expect(level1).toBeDefined();
-    expect(level1!.maxResult).toBe(10);
+    expect(level1!.operatorConfig['+']?.maxResult).toBe(10);
     expect(level1!.operations).toEqual(['+']);
 
     // Run multiple rounds to ensure all randomly generated questions satisfy the constraint

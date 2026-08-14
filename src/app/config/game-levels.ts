@@ -16,14 +16,7 @@ export interface GameLevel {
   description: string;
   icon: string; // Emoji
   operations: OperationType[];
-  operatorConfig?: Partial<Record<OperationType, OperatorConfig>>;
-  minVal?: number;
-  maxVal?: number;
-  maxResult?: number; // Optional maximum sum limit (e.g. sum <= 10)
-  minVal2?: number;
-  maxVal2?: number;
-  subMinVal?: number;
-  subMaxVal?: number;
+  operatorConfig: Partial<Record<OperationType, OperatorConfig>>;
   questionsCount: number;
   passingScore: number; // e.g. 8 out of 10
   bgColor: string; // Background gradient class or style
@@ -36,10 +29,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Premières Additions',
     description: 'Additions très faciles jusqu\'à 10 ! 3 + 2 = ?',
     icon: '🌱',
-    minVal: 1,
-    maxVal: 9,
-    maxResult: 10,
     operations: ['+'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, maxResult: 10 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%)',
@@ -50,9 +43,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Aventure des Additions',
     description: 'Additions faciles à un chiffre ! 4 + 7 = ?',
     icon: '🐣',
-    minVal: 1,
-    maxVal: 9,
     operations: ['+'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFF6E5 0%, #FFDCA2 100%)',
@@ -63,9 +57,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Safari des Soustractions',
     description: 'Soustractions à un chiffre ! 7 - 3 = ?',
     icon: '🦊',
-    minVal: 1,
-    maxVal: 9,
     operations: ['-'],
+    operatorConfig: {
+      '-': { minVal: 1, maxVal: 9 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #E3F8FF 0%, #B8EEFF 100%)',
@@ -76,11 +71,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Super Additions',
     description: 'Additionne un chiffre (1-9) avec un grand nombre (11-30) ! 7 + 15 = ?',
     icon: '🚀',
-    minVal: 1,
-    maxVal: 9,
-    minVal2: 11,
-    maxVal2: 30,
     operations: ['+'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
@@ -91,13 +85,11 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Double Défi',
     description: 'Additions et soustractions avec de grands nombres ! 7 + 15 = ? ou 23 - 5 = ?',
     icon: '🦁',
-    minVal: 1,
-    maxVal: 9,
-    minVal2: 11,
-    maxVal2: 30,
-    subMinVal: 2,
-    subMaxVal: 11,
     operations: ['+', '-'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 },
+      '-': { minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 11 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #EAFCE8 0%, #C4F7BE 100%)',
@@ -108,9 +100,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Magie des Multiplications',
     description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
     icon: '🦄',
-    minVal: 1,
-    maxVal: 10,
     operations: ['*'],
+    operatorConfig: {
+      '*': { minVal: 1, maxVal: 10 }
+    },
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',

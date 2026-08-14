@@ -102,9 +102,10 @@ export class GameService {
       name: `Tables de ${sortedTables.join(', ')}`,
       description: `Entraînement illimité sur les tables ${sortedTables.join(', ')} (Sans chrono)`,
       icon: '♾️',
-      minVal: 1,
-      maxVal: 10,
       operations: ['*'],
+      operatorConfig: {
+        '*': { minVal: 1, maxVal: 10 }
+      },
       questionsCount: 9999,
       passingScore: 8,
       bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
@@ -211,15 +212,15 @@ export class GameService {
 
   private generateSingleQuestion(level: GameLevel): Question {
     const op = level.operations[Math.floor(Math.random() * level.operations.length)];
-    const opConf = level.operatorConfig?.[op];
+    const opConf = level.operatorConfig[op] ?? {};
 
-    const minVal = opConf?.minVal ?? level.minVal ?? 1;
-    const maxVal = opConf?.maxVal ?? level.maxVal ?? 10;
-    const maxResult = opConf?.maxResult ?? level.maxResult;
-    const minVal2 = opConf?.minVal2 ?? level.minVal2;
-    const maxVal2 = opConf?.maxVal2 ?? level.maxVal2;
-    const subMinVal = opConf?.subMinVal ?? level.subMinVal;
-    const subMaxVal = opConf?.subMaxVal ?? level.subMaxVal;
+    const minVal = opConf.minVal ?? 1;
+    const maxVal = opConf.maxVal ?? 10;
+    const maxResult = opConf.maxResult;
+    const minVal2 = opConf.minVal2;
+    const maxVal2 = opConf.maxVal2;
+    const subMinVal = opConf.subMinVal;
+    const subMaxVal = opConf.subMaxVal;
 
     let num1 = 0;
     let num2 = 0;
