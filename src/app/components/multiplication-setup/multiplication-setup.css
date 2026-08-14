@@ -24,32 +24,32 @@
 }
 
 .back-btn {
-  background: #e2e8f0;
-  color: #0f172a;
-  border: none;
+  background: var(--card-bg-hover);
+  color: var(--text-color);
+  border: 1.5px solid var(--border-color);
   border-radius: 12px;
   padding: 0.5rem 1rem;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .back-btn:hover {
   transform: translateX(-3px);
-  background: #cbd5e1;
+  background: var(--border-color);
 }
 
 .setup-title {
   font-size: 2rem;
   font-weight: 900;
-  color: #4c1d95;
+  color: var(--text-color);
   margin: 0;
 }
 
 .setup-instruction {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-muted);
   margin-bottom: 1.5rem;
 }
 
@@ -82,11 +82,16 @@
 
 .selection-count {
   font-weight: 800;
-  color: #3b0764;
+  color: #581C87;
   background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  border: 1px solid rgba(168, 85, 247, 0.35);
   padding: 0.4rem 0.9rem;
   border-radius: 12px;
+}
+
+:host-context(.dark-theme) .selection-count {
+  color: #D8B4FE;
+  background: rgba(168, 85, 247, 0.25);
 }
 
 .tables-grid {
@@ -97,8 +102,8 @@
 }
 
 .table-card {
-  background: #f8fafc;
-  border: 3px solid #cbd5e1;
+  background: var(--card-bg-hover);
+  border: 3px solid var(--border-color);
   border-radius: 20px;
   padding: 1.2rem 0.8rem;
   display: flex;
@@ -120,21 +125,28 @@
 .table-big-number {
   font-size: 2.8rem;
   font-weight: 900;
-  color: #581c87;
+  color: #6B21A8;
   line-height: 1;
   margin-bottom: 0.35rem;
   font-family: 'Outfit', sans-serif;
-  text-shadow: 0 2px 4px rgba(88, 28, 135, 0.1);
+}
+
+:host-context(.dark-theme) .table-big-number {
+  color: #C084FC;
 }
 
 .table-card.selected .table-big-number {
-  color: #3b0764;
+  color: #581C87;
+}
+
+:host-context(.dark-theme) .table-card.selected .table-big-number {
+  color: #E9D5FF;
 }
 
 .table-label {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-color);
 }
 
 .table-card:hover {
@@ -146,6 +158,11 @@
   background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
   border-color: #7c3aed;
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
+}
+
+:host-context(.dark-theme) .table-card.selected {
+  background: linear-gradient(135deg, #3B0764 0%, #581C87 100%);
+  border-color: #A855F7;
 }
 
 .setup-footer {

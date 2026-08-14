@@ -86,14 +86,21 @@
 }
 
 .points-badge {
-  background: linear-gradient(135deg, #FFD026 0%, #FFA900 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 1.5px solid #F59E0B;
+  color: #92400E;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  box-shadow: 0 2px 4px rgba(255, 169, 0, 0.3);
+  font-weight: 850;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+:host-context(.dark-theme) .points-badge {
+  background: linear-gradient(135deg, #3B2805 0%, #4D3308 100%);
+  border-color: #D97706;
+  color: #FDE68A;
+  box-shadow: none;
 }
 
 .nav-btn {

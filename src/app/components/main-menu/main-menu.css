@@ -17,19 +17,22 @@
 .main-title {
   font-size: 2.5rem;
   font-weight: 900;
-  color: #0f172a;
+  color: var(--text-color);
   margin-bottom: 0.5rem;
 }
 
 .player-name {
-  color: #d97706;
-  text-shadow: 0 2px 4px rgba(217, 119, 6, 0.2);
+  color: #B45309;
+}
+
+:host-context(.dark-theme) .player-name {
+  color: #FDBA74;
 }
 
 .subtitle {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-muted);
 }
 
 .mode-cards-grid {
@@ -98,13 +101,13 @@
   font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 0.75rem;
-  color: #0f172a;
+  color: var(--text-color);
 }
 
 .card-description {
   font-size: 1rem;
   font-weight: 600;
-  color: #334155;
+  color: var(--text-muted);
   line-height: 1.5;
   margin-bottom: 1.5rem;
   flex-grow: 1;
@@ -125,13 +128,23 @@
 }
 
 .challenge-tag {
-  background: rgba(255, 159, 67, 0.15);
-  color: #b45309;
+  background: rgba(194, 65, 12, 0.12);
+  color: #C2410C;
+}
+
+:host-context(.dark-theme) .challenge-tag {
+  background: rgba(249, 115, 22, 0.15);
+  color: #FDBA74;
 }
 
 .practice-tag {
   background: rgba(168, 85, 247, 0.15);
   color: #6b21a8;
+}
+
+:host-context(.dark-theme) .practice-tag {
+  background: rgba(168, 85, 247, 0.2);
+  color: #D8B4FE;
 }
 
 .play-mode-btn {
@@ -147,11 +160,11 @@
 }
 
 .challenge-btn {
-  background: linear-gradient(135deg, #ff9f43 0%, #ee5253 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
 }
 
 .practice-btn {
-  background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+  background: linear-gradient(135deg, #9333EA 0%, #7E22CE 100%);
 }
 
 .mode-card:hover .play-mode-btn {

@@ -52,7 +52,9 @@ export class GameSummaryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const score = this.gameService.correctAnswersCount();
+    const score = this.gameService.isTimerEnabled()
+      ? this.gameService.correctAnswersCount()
+      : this.gameService.trainingRecentCorrectCount();
     
     // Stars rating
     if (score === 10) {

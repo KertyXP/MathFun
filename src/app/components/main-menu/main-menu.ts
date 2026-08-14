@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { AudioService } from '../../services/audio.service';
 
 @Component({
   selector: 'app-main-menu',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './main-menu.html',
   styleUrl: './main-menu.css'
 })

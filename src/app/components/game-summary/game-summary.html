@@ -27,7 +27,11 @@
       <!-- Score & Time Banner -->
       <div class="score-banner" [class.passed]="passed()">
         <div class="score-text">
-          {{ gameService.correctAnswersCount() }} / {{ gameService.totalQuestionsCount() }} correctes !
+          @if (gameService.isTimerEnabled()) {
+            {{ gameService.correctAnswersCount() }} / {{ gameService.totalQuestionsCount() }} correctes !
+          } @else {
+            Score (10 derniers calculs) : {{ gameService.trainingScore().formatted }} correctes !
+          }
         </div>
         @if (gameService.isTimerEnabled()) {
           <div class="time-text">

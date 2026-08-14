@@ -28,7 +28,7 @@ export const GAME_LEVELS: GameLevel[] = [
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFF6E5 0%, #FFDCA2 100%)',
-    cardColor: '#FF9F43'
+    cardColor: '#C2410C'
   },
   {
     id: 2,
@@ -56,7 +56,7 @@ export const GAME_LEVELS: GameLevel[] = [
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #E3F8FF 0%, #B8EEFF 100%)',
-    cardColor: '#00D2D3'
+    cardColor: '#0E7490'
   },
   {
     id: 4,
@@ -73,7 +73,7 @@ export const GAME_LEVELS: GameLevel[] = [
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #EAFCE8 0%, #C4F7BE 100%)',
-    cardColor: '#10AC84'
+    cardColor: '#047857'
   },
   {
     id: 5,
@@ -86,7 +86,7 @@ export const GAME_LEVELS: GameLevel[] = [
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
-    cardColor: '#FF9FF3'
+    cardColor: '#A21CAF'
   },
   {
     id: 6,

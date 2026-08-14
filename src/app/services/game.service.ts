@@ -54,6 +54,21 @@ export class GameService {
   });
   readonly correctAnswersCount = computed(() => this.userAnswers().filter(a => a.isCorrect).length);
   readonly allAnswers = computed(() => this.userAnswers());
+
+  // Sliding window properties for unlimited training mode (last 10 answers)
+  readonly recentAnswers = computed(() => this.userAnswers().slice(-10));
+  readonly trainingRecentCorrectCount = computed(() => 
+    this.userAnswers().slice(-10).filter(a => a.isCorrect).length
+  );
+  readonly trainingRecentTotalCount = computed(() => 
+    Math.min(this.userAnswers().length, 10)
+  );
+  readonly trainingScore = computed(() => ({
+    correct: this.trainingRecentCorrectCount(),
+    total: this.trainingRecentTotalCount(),
+    formatted: `${this.trainingRecentCorrectCount()}/${this.trainingRecentTotalCount()}`
+  }));
+
   readonly isGameOver = computed(() => {
     if (!this.isTimerMode()) {
       return false; // Unlimited training mode never ends automatically
@@ -93,7 +108,7 @@ export class GameService {
       questionsCount: 9999,
       passingScore: 8,
       bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
-      cardColor: '#FF69B4'
+      cardColor: '#BE185D'
     };
 
     this.activeLevel.set(customLevel);

@@ -25,7 +25,11 @@
             }
           </div>
         } @else {
-          <div class="header-spacer"></div>
+          <div class="stopwatch-container">
+            <div class="stopwatch-display score-display" title="Score sur les 10 dernières réponses">
+              ⭐ <span class="stopwatch-val">{{ gameService.trainingScore().formatted }}</span>
+            </div>
+          </div>
         }
       </div>
     </div>
@@ -87,7 +91,7 @@
             @if (gameService.isTimerEnabled()) {
               Question {{ gameService.currentQuestionIndex() + 1 }} sur {{ gameService.totalQuestionsCount() }}
             } @else {
-              Calcul #{{ gameService.currentQuestionIndex() + 1 }} — {{ gameService.correctAnswersCount() }} ⭐
+              Calcul #{{ gameService.currentQuestionIndex() + 1 }} — Score : <strong>{{ gameService.trainingScore().formatted }}</strong> ⭐
             }
           </div>
         </div>

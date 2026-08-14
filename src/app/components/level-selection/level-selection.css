@@ -180,6 +180,7 @@
 .locked-text {
   background: var(--card-bg-hover);
   border: 2px solid var(--border-color);
+  color: var(--text-muted);
   padding: 0.6rem 2rem;
   border-radius: 16px;
   font-weight: 700;
