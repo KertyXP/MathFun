@@ -160,3 +160,83 @@ describe('GameService - Mission 7 (Operator-Specific Range Configurations)', () 
     expect(seenSub).toBe(true);
   });
 });
+
+describe('GameService - Mission 8 (Missing Unknown Operand: 10 - X = 7, 4 + X = 10)', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    service = new GameService();
+  });
+
+  it('should generate questions where the missing position is the second operand', () => {
+    const level8 = GAME_LEVELS.find(l => l.id === 8);
+    expect(level8).toBeDefined();
+    expect(level8!.operations).toEqual(['+', '-']);
+    expect(level8!.missingTarget).toBe('num2');
+
+    let seenAdd = false;
+    let seenSub = false;
+
+    for (let round = 0; round < 25; round++) {
+      service.startGame(level8!);
+      service.startActiveQuiz();
+      for (let i = 0; i < 10; i++) {
+        const q = service.currentQuestion();
+        expect(q).toBeTruthy();
+        expect(q!.missingPosition).toBe('num2');
+        expect(q!.correctAnswer).toBe(q!.num2);
+
+        if (q!.operation === '+') {
+          seenAdd = true;
+          expect(q!.text).toBe(`${q!.num1} + ? = ${q!.result}`);
+          expect(q!.num1 + q!.correctAnswer).toBe(q!.result);
+        } else if (q!.operation === '-') {
+          seenSub = true;
+          expect(q!.text).toBe(`${q!.num1} - ? = ${q!.result}`);
+          expect(q!.num1 - q!.correctAnswer).toBe(q!.result);
+          expect(q!.result).toBeGreaterThanOrEqual(0);
+        }
+
+        const correct = service.submitAnswer(q!.correctAnswer);
+        expect(correct).toBe(true);
+      }
+    }
+
+    expect(seenAdd).toBe(true);
+    expect(seenSub).toBe(true);
+  });
+
+  it('should correctly support missing num1 (? + b = c, ? - b = c)', () => {
+    const customLevel = {
+      id: 98,
+      name: 'Custom Num1 Level',
+      description: 'Test',
+      icon: '🧪',
+      operations: ['+', '-'] as const,
+      operatorConfig: {
+        '+': { minVal: 1, maxVal: 10, missingTarget: 'num1' as const },
+        '-': { minVal: 1, maxVal: 10, missingTarget: 'num1' as const }
+      },
+      questionsCount: 10,
+      passingScore: 8,
+      bgColor: '#fff',
+      cardColor: '#000'
+    };
+
+    service.startGame(customLevel);
+    for (let i = 0; i < 10; i++) {
+      const q = service.currentQuestion();
+      expect(q).toBeTruthy();
+      expect(q!.missingPosition).toBe('num1');
+      expect(q!.correctAnswer).toBe(q!.num1);
+      if (q!.operation === '+') {
+        expect(q!.text).toBe(`? + ${q!.num2} = ${q!.result}`);
+        expect(q!.correctAnswer + q!.num2).toBe(q!.result);
+      } else {
+        expect(q!.text).toBe(`? - ${q!.num2} = ${q!.result}`);
+        expect(q!.correctAnswer - q!.num2).toBe(q!.result);
+      }
+      service.submitAnswer(q!.correctAnswer);
+    }
+  });
+});

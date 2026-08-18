@@ -99,23 +99,59 @@
         <!-- Math Formula Display -->
         @if (gameService.currentQuestion(); as question) {
           <div class="formula-container">
-            <span class="math-num animate-num">{{ question.num1 }}</span>
-            <span class="math-op">{{ question.operation === '*' ? '×' : question.operation }}</span>
-            <span class="math-num animate-num">{{ question.num2 }}</span>
-            <span class="math-equals">=</span>
-            
-            <div class="input-container">
-              <input 
-                #answerInput
-                type="text"
-                inputmode="none"
-                readonly
-                class="math-answer-input"
-                [(ngModel)]="typedAnswer"
-                placeholder="?"
-                autocomplete="off"
-              />
-            </div>
+            @if (question.missingPosition === 'num1') {
+              <div class="input-container">
+                <input 
+                  #answerInput
+                  type="text"
+                  inputmode="none"
+                  readonly
+                  class="math-answer-input"
+                  [(ngModel)]="typedAnswer"
+                  placeholder="?"
+                  autocomplete="off"
+                />
+              </div>
+              <span class="math-op">{{ question.operation === '*' ? '×' : question.operation }}</span>
+              <span class="math-num animate-num">{{ question.num2 }}</span>
+              <span class="math-equals">=</span>
+              <span class="math-num animate-num">{{ question.result }}</span>
+            } @else if (question.missingPosition === 'num2') {
+              <span class="math-num animate-num">{{ question.num1 }}</span>
+              <span class="math-op">{{ question.operation === '*' ? '×' : question.operation }}</span>
+              <div class="input-container">
+                <input 
+                  #answerInput
+                  type="text"
+                  inputmode="none"
+                  readonly
+                  class="math-answer-input"
+                  [(ngModel)]="typedAnswer"
+                  placeholder="?"
+                  autocomplete="off"
+                />
+              </div>
+              <span class="math-equals">=</span>
+              <span class="math-num animate-num">{{ question.result }}</span>
+            } @else {
+              <span class="math-num animate-num">{{ question.num1 }}</span>
+              <span class="math-op">{{ question.operation === '*' ? '×' : question.operation }}</span>
+              <span class="math-num animate-num">{{ question.num2 }}</span>
+              <span class="math-equals">=</span>
+              
+              <div class="input-container">
+                <input 
+                  #answerInput
+                  type="text"
+                  inputmode="none"
+                  readonly
+                  class="math-answer-input"
+                  [(ngModel)]="typedAnswer"
+                  placeholder="?"
+                  autocomplete="off"
+                />
+              </div>
+            }
           </div>
 
         <!-- Custom Kid-Friendly Virtual Numpad -->

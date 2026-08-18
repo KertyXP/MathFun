@@ -1,4 +1,6 @@
 export type OperationType = '+' | '-' | '*';
+export type MissingTarget = 'result' | 'num1' | 'num2' | 'random-operand' | 'any';
+export type MissingPosition = 'result' | 'num1' | 'num2';
 
 export interface OperatorConfig {
   minVal?: number;
@@ -8,6 +10,7 @@ export interface OperatorConfig {
   maxVal2?: number;
   subMinVal?: number;
   subMaxVal?: number;
+  missingTarget?: MissingTarget;
 }
 
 export interface GameLevel {
@@ -17,6 +20,7 @@ export interface GameLevel {
   icon: string; // Emoji
   operations: OperationType[];
   operatorConfig: Partial<Record<OperationType, OperatorConfig>>;
+  missingTarget?: MissingTarget;
   questionsCount: number;
   passingScore: number; // e.g. 8 out of 10
   bgColor: string; // Background gradient class or style
@@ -124,5 +128,21 @@ export const GAME_LEVELS: GameLevel[] = [
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
     cardColor: '#5F27CD'
+  },
+  {
+    id: 8,
+    name: 'Le Mystère des Nombres',
+    description: 'Trouve le nombre caché (X) ! 10 - X = 7 ou 4 + X = 10',
+    icon: '🕵️‍♂️',
+    operations: ['+', '-'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, maxResult: 20, missingTarget: 'num2' },
+      '-': { minVal: 1, maxVal: 20, missingTarget: 'num2' }
+    },
+    missingTarget: 'num2',
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+    cardColor: '#6D28D9'
   }
 ];

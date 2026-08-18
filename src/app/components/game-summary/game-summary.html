@@ -93,8 +93,21 @@
                 {{ answer.isCorrect ? '✔️' : '❌' }}
               </div>
               <div class="review-formula">
-                {{ answer.question.text }} = 
-                <span class="answer-val">{{ answer.selectedAnswer === null ? 'Pas de réponse' : answer.selectedAnswer }}</span>
+                @if (answer.question.missingPosition === 'num1') {
+                  <span class="answer-val">{{ answer.selectedAnswer === null ? '?' : answer.selectedAnswer }}</span>
+                  {{ answer.question.operation === '*' ? '×' : answer.question.operation }}
+                  {{ answer.question.num2 }} = {{ answer.question.result }}
+                } @else if (answer.question.missingPosition === 'num2') {
+                  {{ answer.question.num1 }}
+                  {{ answer.question.operation === '*' ? '×' : answer.question.operation }}
+                  <span class="answer-val">{{ answer.selectedAnswer === null ? '?' : answer.selectedAnswer }}</span>
+                  = {{ answer.question.result }}
+                } @else {
+                  {{ answer.question.num1 }}
+                  {{ answer.question.operation === '*' ? '×' : answer.question.operation }}
+                  {{ answer.question.num2 }} = 
+                  <span class="answer-val">{{ answer.selectedAnswer === null ? '?' : answer.selectedAnswer }}</span>
+                }
               </div>
               @if (!answer.isCorrect) {
                 <div class="correct-answer-reveal">

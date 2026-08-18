@@ -1,12 +1,14 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { GameLevel } from '../config/game-levels';
+import { GameLevel, MissingPosition, MissingTarget } from '../config/game-levels';
 
 export interface Question {
   text: string;
   num1: number;
   num2: number;
   operation: '+' | '-' | '*';
+  result: number;
   correctAnswer: number;
+  missingPosition: MissingPosition;
 }
 
 export interface UserAnswer {
@@ -224,7 +226,7 @@ export class GameService {
 
     let num1 = 0;
     let num2 = 0;
-    let correctAnswer = 0;
+    let result = 0;
 
     if (op === '+') {
       if (maxResult !== undefined) {
@@ -252,7 +254,7 @@ export class GameService {
         num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
       }
-      correctAnswer = num1 + num2;
+      result = num1 + num2;
     } else if (op === '-') {
       // Subtraction: ensure positive results for children
       if (minVal2 !== undefined && maxVal2 !== undefined) {
@@ -266,20 +268,53 @@ export class GameService {
         num1 = Math.max(valA, valB);
         num2 = Math.min(valA, valB);
       }
-      correctAnswer = num1 - num2;
+      result = num1 - num2;
     } else {
       // Multiplication
       num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
       num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
-      correctAnswer = num1 * num2;
+      result = num1 * num2;
+    }
+
+    // Determine missing position from operatorConfig or level
+    const rawTarget = opConf.missingTarget ?? level.missingTarget ?? 'result';
+    let missingPosition: MissingPosition = 'result';
+    if (rawTarget === 'num1') {
+      missingPosition = 'num1';
+    } else if (rawTarget === 'num2') {
+      missingPosition = 'num2';
+    } else if (rawTarget === 'random-operand') {
+      missingPosition = Math.random() < 0.5 ? 'num1' : 'num2';
+    } else if (rawTarget === 'any') {
+      const rand = Math.random();
+      missingPosition = rand < 0.33 ? 'num1' : rand < 0.66 ? 'num2' : 'result';
+    } else {
+      missingPosition = 'result';
+    }
+
+    let correctAnswer = result;
+    let displayText = '';
+    const opSymbol = op === '*' ? '×' : op;
+
+    if (missingPosition === 'num1') {
+      correctAnswer = num1;
+      displayText = `? ${opSymbol} ${num2} = ${result}`;
+    } else if (missingPosition === 'num2') {
+      correctAnswer = num2;
+      displayText = `${num1} ${opSymbol} ? = ${result}`;
+    } else {
+      correctAnswer = result;
+      displayText = `${num1} ${opSymbol} ${num2}`;
     }
 
     return {
-      text: `${num1} ${op === '*' ? '×' : op} ${num2}`,
+      text: displayText,
       num1,
       num2,
       operation: op,
-      correctAnswer
+      result,
+      correctAnswer,
+      missingPosition
     };
   }
 
@@ -297,12 +332,15 @@ export class GameService {
           num1 = multiplier;
           num2 = table;
         }
+        const result = num1 * num2;
         q = {
           text: `${num1} × ${num2}`,
           num1,
           num2,
           operation: '*',
-          correctAnswer: num1 * num2
+          result,
+          correctAnswer: result,
+          missingPosition: 'result'
         };
         attempts++;
       } while (attempts < 50 && this.isDuplicateInRecent(q, [...existingList, ...list], 5));
