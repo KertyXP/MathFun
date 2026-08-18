@@ -161,18 +161,19 @@ describe('GameService - Mission 7 (Operator-Specific Range Configurations)', () 
   });
 });
 
-describe('GameService - Mission 8 (Missing Unknown Operand: 10 - X = 7, 4 + X = 10)', () => {
+describe('GameService - Mission 8 (Le Mystère du 10: 10 - X = 7, 4 + X = 10)', () => {
   let service: GameService;
 
   beforeEach(() => {
     service = new GameService();
   });
 
-  it('should generate questions where the missing position is the second operand', () => {
+  it('should always use 10 as result for addition and 10 as first operand for subtraction in Level 8', () => {
     const level8 = GAME_LEVELS.find(l => l.id === 8);
     expect(level8).toBeDefined();
     expect(level8!.operations).toEqual(['+', '-']);
-    expect(level8!.missingTarget).toBe('num2');
+    expect(level8!.operatorConfig['+']?.fixedResult).toBe(10);
+    expect(level8!.operatorConfig['-']?.fixedNum1).toBe(10);
 
     let seenAdd = false;
     let seenSub = false;
@@ -188,11 +189,56 @@ describe('GameService - Mission 8 (Missing Unknown Operand: 10 - X = 7, 4 + X = 
 
         if (q!.operation === '+') {
           seenAdd = true;
-          expect(q!.text).toBe(`${q!.num1} + ? = ${q!.result}`);
+          expect(q!.result).toBe(10);
+          expect(q!.text).toBe(`${q!.num1} + ? = 10`);
+          expect(q!.num1 + q!.correctAnswer).toBe(10);
+        } else if (q!.operation === '-') {
+          seenSub = true;
+          expect(q!.num1).toBe(10);
+          expect(q!.text).toBe(`10 - ? = ${q!.result}`);
+          expect(10 - q!.correctAnswer).toBe(q!.result);
+          expect(q!.result).toBeGreaterThanOrEqual(1);
+        }
+
+        const correct = service.submitAnswer(q!.correctAnswer);
+        expect(correct).toBe(true);
+      }
+    }
+
+    expect(seenAdd).toBe(true);
+    expect(seenSub).toBe(true);
+  });
+});
+
+describe('GameService - Mission 9 (Le Mystère des Nombres: General Unknowns)', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    service = new GameService();
+  });
+
+  it('should generate missing operand questions for larger numbers in Level 9', () => {
+    const level9 = GAME_LEVELS.find(l => l.id === 9);
+    expect(level9).toBeDefined();
+    expect(level9!.operations).toEqual(['+', '-']);
+
+    let seenAdd = false;
+    let seenSub = false;
+
+    for (let round = 0; round < 25; round++) {
+      service.startGame(level9!);
+      service.startActiveQuiz();
+      for (let i = 0; i < 10; i++) {
+        const q = service.currentQuestion();
+        expect(q).toBeTruthy();
+        expect(q!.missingPosition).toBe('num2');
+        expect(q!.correctAnswer).toBe(q!.num2);
+
+        if (q!.operation === '+') {
+          seenAdd = true;
           expect(q!.num1 + q!.correctAnswer).toBe(q!.result);
         } else if (q!.operation === '-') {
           seenSub = true;
-          expect(q!.text).toBe(`${q!.num1} - ? = ${q!.result}`);
           expect(q!.num1 - q!.correctAnswer).toBe(q!.result);
           expect(q!.result).toBeGreaterThanOrEqual(0);
         }
@@ -224,6 +270,7 @@ describe('GameService - Mission 8 (Missing Unknown Operand: 10 - X = 7, 4 + X = 
     };
 
     service.startGame(customLevel);
+    service.startActiveQuiz();
     for (let i = 0; i < 10; i++) {
       const q = service.currentQuestion();
       expect(q).toBeTruthy();

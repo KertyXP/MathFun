@@ -11,6 +11,8 @@ export interface OperatorConfig {
   subMinVal?: number;
   subMaxVal?: number;
   missingTarget?: MissingTarget;
+  fixedNum1?: number;
+  fixedResult?: number;
 }
 
 export interface GameLevel {
@@ -101,6 +103,22 @@ export const GAME_LEVELS: GameLevel[] = [
   },
   {
     id: 6,
+    name: 'Le Mystère du 10',
+    description: 'Trouve le nombre caché (X) avec le nombre 10 ! 10 - X = 7 ou 4 + X = 10',
+    icon: '🧩',
+    operations: ['+', '-'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, fixedResult: 10, missingTarget: 'num2' },
+      '-': { minVal: 1, maxVal: 9, fixedNum1: 10, missingTarget: 'num2' }
+    },
+    missingTarget: 'num2',
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+    cardColor: '#B45309'
+  },
+  {
+    id: 7,
     name: 'Magie des Multiplications',
     description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
     icon: '🦄',
@@ -114,9 +132,25 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#A21CAF'
   },
   {
-    id: 7,
+    id: 8,
+    name: 'Le Mystère des Nombres',
+    description: 'Trouve le nombre caché (X) avec de grands nombres ! 15 - X = 8 ou 7 + X = 19',
+    icon: '🕵️‍♂️',
+    operations: ['+', '-'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 9, minVal2: 10, maxVal2: 25, missingTarget: 'num2' },
+      '-': { minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 10, missingTarget: 'num2' }
+    },
+    missingTarget: 'num2',
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
+    cardColor: '#6D28D9'
+  },
+  {
+    id: 9,
     name: 'Génie des Maths',
-    description: 'Le défi ultime de maths ! Réussiras-tu ?',
+    description: 'Le défi ultime avec calculs et nombres mystères ! Réussiras-tu ?',
     icon: '👑',
     operations: ['+', '-', '*'],
     operatorConfig: {
@@ -124,25 +158,10 @@ export const GAME_LEVELS: GameLevel[] = [
       '-': { minVal: 1, maxVal: 30 },
       '*': { minVal: 1, maxVal: 10 }
     },
+    missingTarget: 'any',
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
     cardColor: '#5F27CD'
-  },
-  {
-    id: 8,
-    name: 'Le Mystère des Nombres',
-    description: 'Trouve le nombre caché (X) ! 10 - X = 7 ou 4 + X = 10',
-    icon: '🕵️‍♂️',
-    operations: ['+', '-'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, maxResult: 20, missingTarget: 'num2' },
-      '-': { minVal: 1, maxVal: 20, missingTarget: 'num2' }
-    },
-    missingTarget: 'num2',
-    questionsCount: 10,
-    passingScore: 8,
-    bgColor: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
-    cardColor: '#6D28D9'
   }
 ];

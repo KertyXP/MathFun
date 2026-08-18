@@ -223,13 +223,25 @@ export class GameService {
     const maxVal2 = opConf.maxVal2;
     const subMinVal = opConf.subMinVal;
     const subMaxVal = opConf.subMaxVal;
+    const fixedNum1 = opConf.fixedNum1;
+    const fixedResult = opConf.fixedResult;
 
     let num1 = 0;
     let num2 = 0;
     let result = 0;
 
     if (op === '+') {
-      if (maxResult !== undefined) {
+      if (fixedResult !== undefined) {
+        result = fixedResult;
+        const min1 = minVal;
+        const max1 = Math.max(min1, fixedResult - minVal);
+        num1 = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
+        num2 = fixedResult - num1;
+      } else if (fixedNum1 !== undefined) {
+        num1 = fixedNum1;
+        num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        result = num1 + num2;
+      } else if (maxResult !== undefined) {
         const min1 = minVal;
         const max1 = Math.max(min1, maxResult - minVal);
         num1 = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
@@ -240,6 +252,7 @@ export class GameService {
           num1 = num2;
           num2 = temp;
         }
+        result = num1 + num2;
       } else if (minVal2 !== undefined && maxVal2 !== undefined) {
         const valA = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         const valB = Math.floor(Math.random() * (maxVal2 - minVal2 + 1)) + minVal2;
@@ -250,25 +263,35 @@ export class GameService {
           num1 = valB;
           num2 = valA;
         }
+        result = num1 + num2;
       } else {
         num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        result = num1 + num2;
       }
-      result = num1 + num2;
     } else if (op === '-') {
-      // Subtraction: ensure positive results for children
-      if (minVal2 !== undefined && maxVal2 !== undefined) {
+      if (fixedNum1 !== undefined) {
+        num1 = fixedNum1;
+        const max2 = Math.min(maxVal, num1 - 1);
+        num2 = Math.floor(Math.random() * (max2 - minVal + 1)) + minVal;
+        result = num1 - num2;
+      } else if (fixedResult !== undefined) {
+        result = fixedResult;
+        num2 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+        num1 = result + num2;
+      } else if (minVal2 !== undefined && maxVal2 !== undefined) {
         const sMin = subMinVal !== undefined ? subMinVal : 2;
         const sMax = subMaxVal !== undefined ? subMaxVal : 11;
         num1 = Math.floor(Math.random() * (maxVal2 - minVal2 + 1)) + minVal2;
         num2 = Math.floor(Math.random() * (sMax - sMin + 1)) + sMin;
+        result = num1 - num2;
       } else {
         const valA = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         const valB = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
         num1 = Math.max(valA, valB);
         num2 = Math.min(valA, valB);
+        result = num1 - num2;
       }
-      result = num1 - num2;
     } else {
       // Multiplication
       num1 = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
