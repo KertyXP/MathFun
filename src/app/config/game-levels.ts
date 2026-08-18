@@ -103,6 +103,36 @@ export const GAME_LEVELS: GameLevel[] = [
   },
   {
     id: 6,
+    name: 'Magie des Multiplications',
+    description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
+    icon: '🦄',
+    operations: ['*'],
+    operatorConfig: {
+      '*': { minVal: 1, maxVal: 10 }
+    },
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
+    cardColor: '#A21CAF'
+  },
+  {
+    id: 7,
+    name: 'Génie des Maths',
+    description: 'Le défi ultime de maths ! Réussiras-tu ?',
+    icon: '👑',
+    operations: ['+', '-', '*'],
+    operatorConfig: {
+      '+': { minVal: 1, maxVal: 30 },
+      '-': { minVal: 1, maxVal: 30 },
+      '*': { minVal: 1, maxVal: 10 }
+    },
+    questionsCount: 10,
+    passingScore: 8,
+    bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
+    cardColor: '#5F27CD'
+  },
+  {
+    id: 8,
     name: 'Le Mystère du 10',
     description: 'Trouve le nombre caché (X) avec le nombre 10 ! 10 - X = 7 ou 4 + X = 10',
     icon: '🧩',
@@ -118,21 +148,7 @@ export const GAME_LEVELS: GameLevel[] = [
     cardColor: '#B45309'
   },
   {
-    id: 7,
-    name: 'Magie des Multiplications',
-    description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
-    icon: '🦄',
-    operations: ['*'],
-    operatorConfig: {
-      '*': { minVal: 1, maxVal: 10 }
-    },
-    questionsCount: 10,
-    passingScore: 8,
-    bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
-    cardColor: '#A21CAF'
-  },
-  {
-    id: 8,
+    id: 9,
     name: 'Le Mystère des Nombres',
     description: 'Trouve le nombre caché (X) avec de grands nombres ! 15 - X = 8 ou 7 + X = 19',
     icon: '🕵️‍♂️',
@@ -146,22 +162,5 @@ export const GAME_LEVELS: GameLevel[] = [
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
     cardColor: '#6D28D9'
-  },
-  {
-    id: 9,
-    name: 'Génie des Maths',
-    description: 'Le défi ultime avec calculs et nombres mystères ! Réussiras-tu ?',
-    icon: '👑',
-    operations: ['+', '-', '*'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 30 },
-      '-': { minVal: 1, maxVal: 30 },
-      '*': { minVal: 1, maxVal: 10 }
-    },
-    missingTarget: 'any',
-    questionsCount: 10,
-    passingScore: 8,
-    bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
-    cardColor: '#5F27CD'
   }
 ];
