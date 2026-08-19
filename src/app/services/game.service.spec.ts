@@ -12,8 +12,8 @@ describe('GameService - Mission 1 (Easy Additions <= 10)', () => {
   it('should generate questions where sum never exceeds 10 for Level 1', () => {
     const level1 = GAME_LEVELS.find(l => l.id === 1);
     expect(level1).toBeDefined();
-    expect(level1!.operatorConfig['+']?.maxResult).toBe(10);
-    expect(level1!.operations).toEqual(['+']);
+    const plusConfig = level1!.operatorConfig.find(o => o.operation === '+');
+    expect(plusConfig?.maxResult).toBe(10);
 
     // Run multiple rounds to ensure all randomly generated questions satisfy the constraint
     for (let round = 0; round < 20; round++) {
@@ -114,10 +114,9 @@ describe('GameService - Mission 7 (Operator-Specific Range Configurations)', () 
   it('should respect operatorConfig for Level 7 (multiplication 1-10, addition and subtraction 1-30)', () => {
     const level7 = GAME_LEVELS.find(l => l.id === 7);
     expect(level7).toBeDefined();
-    expect(level7!.operatorConfig).toBeDefined();
-    expect(level7!.operatorConfig!['*']).toEqual({ minVal: 1, maxVal: 10 });
-    expect(level7!.operatorConfig!['+']).toEqual({ minVal: 1, maxVal: 30 });
-    expect(level7!.operatorConfig!['-']).toEqual({ minVal: 1, maxVal: 30 });
+    expect(level7!.operatorConfig.find(o => o.operation === '*')).toEqual({ operation: '*', minVal: 1, maxVal: 10 });
+    expect(level7!.operatorConfig.find(o => o.operation === '+')).toEqual({ operation: '+', minVal: 1, maxVal: 30 });
+    expect(level7!.operatorConfig.find(o => o.operation === '-')).toEqual({ operation: '-', minVal: 1, maxVal: 30 });
 
     let seenMul = false;
     let seenAdd = false;
@@ -171,9 +170,10 @@ describe('GameService - Mission 8 (Le Mystère du 10: 10 - X = 7, 4 + X = 10)', 
   it('should always use 10 as result for addition and 10 as first operand for subtraction in Level 8', () => {
     const level8 = GAME_LEVELS.find(l => l.id === 8);
     expect(level8).toBeDefined();
-    expect(level8!.operations).toEqual(['+', '-']);
-    expect(level8!.operatorConfig['+']?.fixedResult).toBe(10);
-    expect(level8!.operatorConfig['-']?.fixedNum1).toBe(10);
+    const plusConfig = level8!.operatorConfig.find(o => o.operation === '+');
+    const minusConfig = level8!.operatorConfig.find(o => o.operation === '-');
+    expect(plusConfig?.fixedResult).toBe(10);
+    expect(minusConfig?.fixedNum1).toBe(10);
 
     let seenAdd = false;
     let seenSub = false;
@@ -220,7 +220,6 @@ describe('GameService - Mission 9 (Le Mystère des Nombres: General Unknowns)', 
   it('should generate missing operand questions for larger numbers in Level 9', () => {
     const level9 = GAME_LEVELS.find(l => l.id === 9);
     expect(level9).toBeDefined();
-    expect(level9!.operations).toEqual(['+', '-']);
 
     let seenAdd = false;
     let seenSub = false;
@@ -251,6 +250,62 @@ describe('GameService - Mission 9 (Le Mystère des Nombres: General Unknowns)', 
     expect(seenAdd).toBe(true);
     expect(seenSub).toBe(true);
   });
+});
+
+describe('GameService - Multiple Configs per Operator Type (e.g. big additions AND missing unknowns)', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    service = new GameService();
+  });
+
+  it('should support multiple configs for the same operator in a level', () => {
+    const multiConfigLevel = {
+      id: 97,
+      name: 'Multi + Configs Level',
+      description: 'Test level with multiple + configurations',
+      icon: '🧪',
+      operatorConfig: [
+        { operation: '+' as const, minVal: 20, maxVal: 50 }, // standard big additions (27 + 42 = ?)
+        { operation: '+' as const, minVal: 1, maxVal: 10, missingTarget: 'num2' as const } // missing unknowns (4 + X = 10)
+      ],
+      questionsCount: 10,
+      passingScore: 8,
+      bgColor: '#fff',
+      cardColor: '#000'
+    };
+
+    service.startGame(multiConfigLevel);
+    service.startActiveQuiz();
+
+    let seenStandard = false;
+    let seenMissing = false;
+
+    for (let round = 0; round < 30; round++) {
+      service.startGame(multiConfigLevel);
+      service.startActiveQuiz();
+      for (let i = 0; i < 10; i++) {
+        const q = service.currentQuestion();
+        expect(q).toBeTruthy();
+        expect(q!.operation).toBe('+');
+        if (q!.missingPosition === 'result') {
+          seenStandard = true;
+          expect(q!.num1).toBeGreaterThanOrEqual(20);
+          expect(q!.num1).toBeLessThanOrEqual(50);
+          expect(q!.correctAnswer).toBe(q!.num1 + q!.num2);
+        } else if (q!.missingPosition === 'num2') {
+          seenMissing = true;
+          expect(q!.num1).toBeGreaterThanOrEqual(1);
+          expect(q!.num1).toBeLessThanOrEqual(10);
+          expect(q!.correctAnswer).toBe(q!.num2);
+        }
+        service.submitAnswer(q!.correctAnswer);
+      }
+    }
+
+    expect(seenStandard).toBe(true);
+    expect(seenMissing).toBe(true);
+  });
 
   it('should correctly support missing num1 (? + b = c, ? - b = c)', () => {
     const customLevel = {
@@ -258,11 +313,10 @@ describe('GameService - Mission 9 (Le Mystère des Nombres: General Unknowns)', 
       name: 'Custom Num1 Level',
       description: 'Test',
       icon: '🧪',
-      operations: ['+', '-'] as const,
-      operatorConfig: {
-        '+': { minVal: 1, maxVal: 10, missingTarget: 'num1' as const },
-        '-': { minVal: 1, maxVal: 10, missingTarget: 'num1' as const }
-      },
+      operatorConfig: [
+        { operation: '+' as const, minVal: 1, maxVal: 10, missingTarget: 'num1' as const },
+        { operation: '-' as const, minVal: 1, maxVal: 10, missingTarget: 'num1' as const }
+      ],
       questionsCount: 10,
       passingScore: 8,
       bgColor: '#fff',

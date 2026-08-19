@@ -104,10 +104,9 @@ export class GameService {
       name: `Tables de ${sortedTables.join(', ')}`,
       description: `Entraînement illimité sur les tables ${sortedTables.join(', ')} (Sans chrono)`,
       icon: '♾️',
-      operations: ['*'],
-      operatorConfig: {
-        '*': { minVal: 1, maxVal: 10 }
-      },
+      operatorConfig: [
+        { operation: '*', minVal: 1, maxVal: 10 }
+      ],
       questionsCount: 9999,
       passingScore: 8,
       bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
@@ -213,8 +212,8 @@ export class GameService {
   }
 
   private generateSingleQuestion(level: GameLevel): Question {
-    const op = level.operations[Math.floor(Math.random() * level.operations.length)];
-    const opConf = level.operatorConfig[op] ?? {};
+    const opConf = level.operatorConfig[Math.floor(Math.random() * level.operatorConfig.length)];
+    const op = opConf.operation;
 
     const minVal = opConf.minVal ?? 1;
     const maxVal = opConf.maxVal ?? 10;
@@ -299,8 +298,8 @@ export class GameService {
       result = num1 * num2;
     }
 
-    // Determine missing position from operatorConfig or level
-    const rawTarget = opConf.missingTarget ?? level.missingTarget ?? 'result';
+    // Determine missing position from operatorConfig
+    const rawTarget = opConf.missingTarget ?? 'result';
     let missingPosition: MissingPosition = 'result';
     if (rawTarget === 'num1') {
       missingPosition = 'num1';

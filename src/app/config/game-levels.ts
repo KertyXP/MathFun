@@ -3,6 +3,7 @@ export type MissingTarget = 'result' | 'num1' | 'num2' | 'random-operand' | 'any
 export type MissingPosition = 'result' | 'num1' | 'num2';
 
 export interface OperatorConfig {
+  operation: OperationType;
   minVal?: number;
   maxVal?: number;
   maxResult?: number;
@@ -20,9 +21,7 @@ export interface GameLevel {
   name: string;
   description: string;
   icon: string; // Emoji
-  operations: OperationType[];
-  operatorConfig: Partial<Record<OperationType, OperatorConfig>>;
-  missingTarget?: MissingTarget;
+  operatorConfig: OperatorConfig[];
   questionsCount: number;
   passingScore: number; // e.g. 8 out of 10
   bgColor: string; // Background gradient class or style
@@ -35,10 +34,9 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Premières Additions',
     description: 'Additions très faciles jusqu\'à 10 ! 3 + 2 = ?',
     icon: '🌱',
-    operations: ['+'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, maxResult: 10 }
-    },
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9, maxResult: 10 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%)',
@@ -49,10 +47,9 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Aventure des Additions',
     description: 'Additions faciles à un chiffre ! 4 + 7 = ?',
     icon: '🐣',
-    operations: ['+'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9 }
-    },
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFF6E5 0%, #FFDCA2 100%)',
@@ -63,10 +60,9 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Safari des Soustractions',
     description: 'Soustractions à un chiffre ! 7 - 3 = ?',
     icon: '🦊',
-    operations: ['-'],
-    operatorConfig: {
-      '-': { minVal: 1, maxVal: 9 }
-    },
+    operatorConfig: [
+      { operation: '-', minVal: 1, maxVal: 9 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #E3F8FF 0%, #B8EEFF 100%)',
@@ -77,10 +73,9 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Super Additions',
     description: 'Additionne un chiffre (1-9) avec un grand nombre (11-30) ! 7 + 15 = ?',
     icon: '🚀',
-    operations: ['+'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 }
-    },
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
@@ -91,11 +86,10 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Double Défi',
     description: 'Additions et soustractions avec de grands nombres ! 7 + 15 = ? ou 23 - 5 = ?',
     icon: '🦁',
-    operations: ['+', '-'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 },
-      '-': { minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 11 }
-    },
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9, minVal2: 11, maxVal2: 30 },
+      { operation: '-', minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 11 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #EAFCE8 0%, #C4F7BE 100%)',
@@ -106,10 +100,9 @@ export const GAME_LEVELS: GameLevel[] = [
     name: 'Magie des Multiplications',
     description: 'Apprends les tables de multiplication ! 3 × 4 = ?',
     icon: '🦄',
-    operations: ['*'],
-    operatorConfig: {
-      '*': { minVal: 1, maxVal: 10 }
-    },
+    operatorConfig: [
+      { operation: '*', minVal: 1, maxVal: 10 }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FFE9FB 0%, #FFB6F3 100%)',
@@ -117,50 +110,47 @@ export const GAME_LEVELS: GameLevel[] = [
   },
   {
     id: 7,
-    name: 'Génie des Maths',
-    description: 'Le défi ultime de maths ! Réussiras-tu ?',
-    icon: '👑',
-    operations: ['+', '-', '*'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 30 },
-      '-': { minVal: 1, maxVal: 30 },
-      '*': { minVal: 1, maxVal: 10 }
-    },
-    questionsCount: 10,
-    passingScore: 8,
-    bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
-    cardColor: '#5F27CD'
-  },
-  {
-    id: 8,
     name: 'Le Mystère du 10',
     description: 'Trouve le nombre caché (X) avec le nombre 10 ! 10 - X = 7 ou 4 + X = 10',
     icon: '🧩',
-    operations: ['+', '-'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, fixedResult: 10, missingTarget: 'num2' },
-      '-': { minVal: 1, maxVal: 9, fixedNum1: 10, missingTarget: 'num2' }
-    },
-    missingTarget: 'num2',
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9, fixedResult: 10, missingTarget: 'num2' },
+      { operation: '-', minVal: 1, maxVal: 9, fixedNum1: 10, missingTarget: 'num2' }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
     cardColor: '#B45309'
   },
   {
-    id: 9,
+    id: 8,
     name: 'Le Mystère des Nombres',
     description: 'Trouve le nombre caché (X) avec de grands nombres ! 15 - X = 8 ou 7 + X = 19',
     icon: '🕵️‍♂️',
-    operations: ['+', '-'],
-    operatorConfig: {
-      '+': { minVal: 1, maxVal: 9, minVal2: 10, maxVal2: 25, missingTarget: 'num2' },
-      '-': { minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 10, missingTarget: 'num2' }
-    },
-    missingTarget: 'num2',
+    operatorConfig: [
+      { operation: '+', minVal: 1, maxVal: 9, minVal2: 10, maxVal2: 25, missingTarget: 'num2' },
+      { operation: '-', minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 10, missingTarget: 'num2' }
+    ],
     questionsCount: 10,
     passingScore: 8,
     bgColor: 'linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)',
     cardColor: '#6D28D9'
-  }
+  },
+  {
+    id: 9,
+    name: 'Génie des Maths',
+    description: 'Le défi ultime de maths ! Réussiras-tu ?',
+    icon: '👑',
+    operatorConfig: [
+      { operation: '+', minVal: 11, maxVal: 99 },
+      { operation: '-', minVal: 11, maxVal: 99 },
+      { operation: '*', minVal: 2, maxVal: 11 },
+      { operation: '+', minVal: 11, maxVal: 9, minVal2: 10, maxVal2: 25, missingTarget: 'num2' },
+      { operation: '-', minVal2: 11, maxVal2: 30, subMinVal: 2, subMaxVal: 10, missingTarget: 'num2' }
+    ],
+    questionsCount: 20,
+    passingScore: 16,
+    bgColor: 'linear-gradient(135deg, #ECE5FF 0%, #CFBCFF 100%)',
+    cardColor: '#5F27CD'
+  },
 ];
